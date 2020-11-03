@@ -1,26 +1,26 @@
-#fibonacci
-ADDI $8, $0, 4  #n = 4
-ADDI $9, $0, 1   #i = 0
-ADDI $10, $0, 1  #j = 0
-ADDI $11, $0, 1  #fib
+ADDI $8, $0, 5
+ADDI $9, $0, 2
+XOR $10, $8, $9
+#comment
+SW $10, 3($0)
+SLL $10, $10, 2
 
-BEQ $8, $0, 7
-BEQ $8, $9, 8
+SUB $8, $8, $10 # other comment
+BLEZ $8, -2
 
-ADDI $8, $8, -2
+ROTR $8, $8, 3
+LW $10, 3($0)
+AND $10, $10, $8
 
-BEQ $8, $0, 8
-ADD $11, $9, $10
-ADD $10, $0, $9
-ADDI $8, $8, -1
-JAL $0, -5
+MULT $10, $9
+MFLO $12
+MFHI $13
 
-ADD $2, $0, $0
-JAL 4
-
-ADDI $2, $0, 1
-JAL 3
-
-ADD $2, $0, $11
-
+ADDI $14, $0, 64
+JR $14
 NOP
+NOP
+
+DIV $14, $9
+MFLO $15
+MFHI $16

@@ -24,7 +24,7 @@
 #define MULT    0x18    //<-
 #define NOP     0x0     //<-
 #define OR      0x25    //<-
-#define ROTR    0x1     //<-
+#define ROTR    0x2     //<-
 #define SLL     0x0     //<-
 #define SLT     0x2A    //<-
 #define SRL     0x2     //<-
@@ -49,4 +49,6 @@ char* getOpcode(const char* inst);
 int getOperande(const char* inst, int placement, int reg, int* except);
 int getBase(const char* inst, int* except);
 int getOffset(const char* inst, int* except);
+
+char* removeSpaces(char* src);
 #endif

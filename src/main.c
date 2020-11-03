@@ -16,7 +16,8 @@ int main(int argc, char* args[])
     }
     if(argc != 3)
     {
-        perror("Missing argument : out file required\n");
+        perror("Missing argument : output file required\n");
+        return -1;
     }
 
     assemblyToHex(args[1], args[2]);

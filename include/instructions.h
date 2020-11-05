@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "str.h"
 
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
@@ -41,6 +42,7 @@
 #define SYNTAX_ERROR    3
 #define REG_EXPECTED    4
 #define IMM_EXPECTED    5
+#define UNDEFINED_REG   6
 
 void assemblyToHex(const char* src, const char* dst);
 int instructionHex(const char* inst, int *except);
@@ -49,6 +51,8 @@ char* getOpcode(const char* inst);
 int getOperande(const char* inst, int placement, int reg, int* except);
 int getBase(const char* inst, int* except);
 int getOffset(const char* inst, int* except);
+int getRegister(const char* reg, int *except);
 
-char* removeSpaces(char* src);
+
+
 #endif

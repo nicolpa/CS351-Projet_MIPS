@@ -176,7 +176,6 @@ int instructionHex(const char* inst, int *except)
 char* getOpcode(const char* inst) 
 {
     int i = 0;
-    
     while (inst[i] != ' ' && inst[i] != '\0')
         i++;
 
@@ -190,7 +189,6 @@ char* getOpcode(const char* inst)
 
 int getOperande(const char* inst, int placement, int reg, int* except) 
 {
-    // printf("%s\n", inst);
     if(*except != OK)
         return 0;
 
@@ -199,9 +197,6 @@ int getOperande(const char* inst, int placement, int reg, int* except)
         op = strchr(op, ',') + 1;
     else if(placement == 2)
         op = strchr(strchr(op, ',' ) + 1, ',') + 1;
-    
-    // while (*op == ' ')
-    //     op +=1;
     
     if(reg && op[0] != '$')
     {
@@ -215,7 +210,7 @@ int getOperande(const char* inst, int placement, int reg, int* except)
     }
 
     int i = 0;
-    if(reg) op = op + 1;
+    if(reg) op++;
 
     while (op[i] != ',' && op[i] != '\0')
         i++;
@@ -225,7 +220,20 @@ int getOperande(const char* inst, int placement, int reg, int* except)
         res[j] = op[j];
     res[i] = '\0';
 
-    return atoi(res);
+    if(reg)
+        return getRegister(res, except);
+    else
+    {
+        int strToIntErr = 0;
+        int n = strToInt(res, &strToIntErr);
+        if(strToIntErr == -1)
+        {
+            *except = SYNTAX_ERROR;
+            return 0;
+        }
+
+        return n;
+    }
 }
 
 int getBase(const char* inst, int* except) 
@@ -251,7 +259,7 @@ int getBase(const char* inst, int* except)
     for(int j = 0; j < i; j++)
         res[j] = base[j];
     res[i] = '\0';
-    return atoi(res);
+    return getRegister(res, except);
 
 }
 
@@ -278,34 +286,50 @@ int getOffset(const char* inst, int* except)
         res[j] = offset[j];
     res[i] = '\0';
     
-    return atoi(res);
+    int strToIntErr = 0;
+    int n = strToInt(res, &strToIntErr);
+    if(strToIntErr == -1)
+    {
+        *except = SYNTAX_ERROR;
+        return 0;
+    }
+
+    return n;
 }
 
-char* removeSpaces(char* src) 
+int getRegister(const char* reg, int *except)
 {
-    int nSpace = 0;
-    for(int i = 0; i <= strlen(src); i++)
+    int strToIntErr;
+    if      (strcmp(reg, "zero") == 0)     return 0;
+    else if (strcmp(reg, "at"  ) == 0)     return 1;
+    else if (strcmp(reg, "gp"  ) == 0)     return 28;
+    else if (strcmp(reg, "sp"  ) == 0)     return 29;
+    else if (strcmp(reg, "fp"  ) == 0)     return 30;
+    else if (strcmp(reg, "ra"  ) == 0)     return 31;
+    else
     {
-        if(src[i] == ' ')
-            nSpace++;
-    }
-
-    if(nSpace == 0)
-        return src;
-
-    int sizeRes = strlen(src) - nSpace ;
-    char* res = (char*)malloc(sizeRes * sizeof(char));
-
-    int j = 0;
-    for(int i = 0; i < strlen(src); i++)
-    {
-        if(src[i] != ' ')
+        if(strchr("vatsk", reg[0]) != NULL)
         {
-            res[j] = src[i];
-            j++;
+            int num = strToInt(reg + 1, &strToIntErr);
+            if(strToIntErr != -1) 
+            {
+                if(reg[0] == 'v' && (num == 0 || num == 1))  return num + 2;
+                if(reg[0] == 'a' && (num >= 0 && num <= 3))  return num + 4;
+                if(reg[0] == 's' && (num >= 0 && num <= 7))  return num + 16;
+                if(reg[0] == 'k' && (num == 0 || num == 1))  return num + 26;
+                if(reg[0] == 't')
+                {
+                    if(num >= 0 && num <= 7)
+                        return num + 8;
+                    else if(num == 8 || num == 9)
+                        return num + 16;
+                }
+            }
         }
-    }
-    res[sizeRes] = '\0';
+        else if(strToInt(reg, &strToIntErr) >= 0 && strToInt(reg, &strToIntErr) <= 31 && strToIntErr != -1)
+            return atoi(reg);
 
-    return res;
+        *except = UNDEFINED_REG;
+        return 0;
+    }
 }

@@ -5,7 +5,7 @@ SRC = src
 INCLUDE = include
 LIB = lib
 LIBRARIES = 
-EXECUTABLE = main
+EXECUTABLE = emu-mips
 
 all: $(BIN)/$(EXECUTABLE)
 

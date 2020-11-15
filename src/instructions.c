@@ -183,7 +183,7 @@ char* getOpcode(const char* inst)
     for(int j = 0; j < i; j++)
         op[j] = inst[j];
     op[i] = '\0';
-
+    
     return op; 
 }
 

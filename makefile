@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -ansi --std=c11
+CFLAGS = -Wall -pedantic -ansi --std=c11 -g
 BIN = bin
 SRC = src
 INCLUDE = include
@@ -14,7 +14,7 @@ run: clean all
 	./$(BIN)/$(EXECUTABLE)
 	
 $(BIN)/$(EXECUTABLE): $(SRC)/*.c
-	$(CC) $(CFLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES) -g
+	$(CC) $(CFLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
 	
 clean:
 	-rm $(BIN)/*

@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stdio.h>
 
 #ifndef REGISTER_H
@@ -8,15 +7,21 @@
 
 void initRegisters();
 
-int32_t  getRegisterValue(int registerId);
-int32_t getHO();
-int32_t getHI();
-int32_t getPC();
+int getRegisterValue(int registerId);
 
-void setRegisterValue(int registerId, int32_t value);
-void setHO(int32_t value);
-void setHI(int32_t value);
-void setPC(int32_t value);
+int getHO();
+
+int getHI();
+
+int getPC();
+
+void setRegisterValue(int registerId, int value);
+
+void setHO(int value);
+
+void setHI(int value);
+
+void setPC(int value);
 
 void displayRegisters();
 

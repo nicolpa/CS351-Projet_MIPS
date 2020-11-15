@@ -1,63 +1,63 @@
 #include "../include/register.h"
 
-int32_t registers[N_REGISTER];
+int registers[N_REGISTER];
 
-int32_t PC, HI, HO;
+int PC, HI, HO;
 
-void initRegisters() 
+void initRegisters()
 {
-    for(int i = 0; i < N_REGISTER; i++)
+    for (int i = 0; i < N_REGISTER; i++)
         registers[i] = 0;
 
     PC = HI = HO = 0;
 }
 
-int32_t getRegisterValue(int registerId) 
+int getRegisterValue(int registerId)
 {
     return registers[registerId];
 }
 
-int32_t getHO() 
+int getHO()
 {
     return HO;
 }
 
-int32_t getHI() 
+int getHI()
 {
     return HI;
 }
 
-int32_t getPC() 
+int getPC()
 {
     return PC;
 }
 
-void setRegisterValue(int registerId, int32_t value) 
+void setRegisterValue(int registerId, int value)
 {
     registers[registerId] = value;
 }
 
-void setHO(int32_t value) 
+void setHO(int value)
 {
     HO = value;
 }
 
-void setHI(int32_t value) 
+void setHI(int value)
 {
     HI = value;
 }
 
-void setPC(int32_t value) 
+void setPC(int value)
 {
     PC = value;
 }
 
-void displayRegisters() 
+void displayRegisters()
 {
-    for(int i = 0; i < N_REGISTER; i += 4)
+    for (int i = 0; i < N_REGISTER; i += 4)
     {
         printf("$%.2d : %d", i, registers[i]);
-        for(int j = 1; j < 4; j++)
+        for (int j = 1; j < 4; j++)
             printf("\t\t$%.2d : %d", i + j, registers[i + j]);
         printf("\n");
     }

@@ -6,33 +6,33 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
-//instruction
-#define ADD     0x20    //<- 
+//instruction set
+#define ADD     0x20 //<-
 #define ADDI    0x8
-#define AND     0x24    //<-
+#define AND     0x24 //<-
 #define BEQ     0x4
 #define BGTZ    0x7
 #define BLEZ    0x6
 #define BNE     0x5
-#define DIV     0x1A    //<-
+#define DIV     0x1A //<-
 #define J       0x2
 #define JAL     0x3
-#define JR      0x8     //<-
+#define JR      0x8 //<-
 #define LUI     0xF
 #define LW      0x23
-#define MFHI    0x10    //<-
-#define MFLO    0x12    //<-
-#define MULT    0x18    //<-
-#define NOP     0x0     //<-
-#define OR      0x25    //<-
-#define ROTR    0x2     //<-
-#define SLL     0x0     //<-
-#define SLT     0x2A    //<-
-#define SRL     0x2     //<-
-#define SRL     0x2     //<-
-#define SUB     0x22    //<-
+#define MFHI    0x10 //<-
+#define MFLO    0x12 //<-
+#define MULT    0x18 //<-
+#define NOP     0x0   //<-
+#define OR      0x25   //<-
+#define ROTR    0x2  //<-
+#define SLL     0x0   //<-
+#define SLT     0x2A  //<-
+#define SRL     0x2   //<-
+#define SRL     0x2   //<-
+#define SUB     0x22  //<-
 #define SW      0x2B
-#define SYSCALL 0xC     //<-
+#define SYSCALL 0xC //<-
 #define XOR     0x26    //<-
 
 //exception
@@ -44,15 +44,19 @@
 #define IMM_EXPECTED    5
 #define UNDEFINED_REG   6
 
-void assemblyToHex(const char* src, const char* dst);
-int instructionHex(const char* inst, int *except);
-char* getOpcode(const char* inst);
+void assemblyToHex(const char *src, const char *dst);
+
+int instructionHex(const char *inst, int *except);
+
+char *getOpcode(const char *inst);
+
 //reg = 1 the op is a register
-int getOperande(const char* inst, int placement, int reg, int* except);
-int getBase(const char* inst, int* except);
-int getOffset(const char* inst, int* except);
-int getRegister(const char* reg, int *except);
+int getOperande(const char *inst, int placement, int reg, int *except);
 
+int getBase(const char *inst, int *except);
 
+int getOffset(const char *inst, int *except);
+
+int getRegister(const char *reg, int *except);
 
 #endif

@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stdio.h>
 #include "linkedList.h"
 
@@ -11,7 +10,7 @@ void initMemory();
 
 int load(int address);
 
-void store(int address, int32_t value);
+void store(int address, int value);
 
 void displayMemory();
 

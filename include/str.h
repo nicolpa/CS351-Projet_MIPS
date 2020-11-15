@@ -4,9 +4,8 @@
 #ifndef STR_H
 #define STR_H
 
+char *removeSpaces(const char *str);
 
-char* removeSpaces(const char* str);
-
-int strToInt(const char* str, int* except);
+int strToInt(const char *str, int *except);
 
 #endif

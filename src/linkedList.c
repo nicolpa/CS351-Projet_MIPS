@@ -1,6 +1,6 @@
 #include "linkedList.h"
 
-void insert(List *l, int value, int address) 
+void insert(List *l, int value, int address)
 {
     Node *ptCurr = *l;
     Node *ptPrev = NULL;
@@ -10,15 +10,15 @@ void insert(List *l, int value, int address)
         ptCurr = ptCurr->next;
     }
 
-    if(ptCurr != NULL && ptCurr->address == address)
+    if (ptCurr != NULL && ptCurr->address == address)
         ptCurr->value = value;
     else
     {
-        Node *e = (Node*)malloc(sizeof(Node));
+        Node *e = (Node *)malloc(sizeof(Node));
         e->value = value;
         e->address = address;
 
-        if(ptPrev != NULL)
+        if (ptPrev != NULL)
             ptPrev->next = e;
         else
             *l = e;
@@ -27,7 +27,7 @@ void insert(List *l, int value, int address)
     }
 }
 
-void delete(List *l, int address) 
+void delete (List *l, int address)
 {
     Node *ptCurr = *l;
     Node *ptPrev = NULL;
@@ -38,9 +38,9 @@ void delete(List *l, int address)
         ptCurr = ptCurr->next;
     }
 
-    if(ptCurr != NULL && ptCurr->address == address)
+    if (ptCurr != NULL && ptCurr->address == address)
     {
-        if(ptPrev != NULL)
+        if (ptPrev != NULL)
             ptPrev->next = ptCurr->next;
         else
             *l = ptCurr->next;
@@ -56,33 +56,34 @@ int fetch(List *l, int address)
     while (ptCurr != NULL && ptCurr->address <= address)
         ptCurr = ptCurr->next;
 
-
-    if(ptCurr != NULL && ptCurr->address == address)
+    if (ptCurr != NULL && ptCurr->address == address)
         return ptCurr->value;
-    
+
     return 0;
 }
 
-void print(List *l) 
+void print(List *l)
 {
     Node *ptCurr = *l;
 
     int i = 0;
     while (ptCurr != NULL)
     {
-        if(i != 0)  printf("\t\t");
+        if (i != 0)
+            printf("\t\t");
         printf("@%.8d : %d", ptCurr->address, ptCurr->value);
-        if(i == 3)  printf("\n");
+        if (i == 3)
+            printf("\n");
 
         i = (i + 1) % 4;
 
         ptCurr = ptCurr->next;
     }
-    if(i != 3 && i != 0)
+    if (i != 3 && i != 0)
         printf("\n");
 }
 
-void clear(List *l) 
+void clear(List *l)
 {
     Node *ptCurr = *l;
 

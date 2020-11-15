@@ -16,7 +16,7 @@ typedef Node *List;
 
 void insert(List *l, int value, int address);
 
-void delete(List *l, int address);
+void delete (List *l, int address);
 
 int fetch(List *l, int address);
 

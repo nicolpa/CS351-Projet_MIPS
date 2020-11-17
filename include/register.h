@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "exceptions.h"
 
 #ifndef REGISTER_H
 #define REGISTER_H

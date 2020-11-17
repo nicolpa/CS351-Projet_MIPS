@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "linkedList.h"
+#include "exceptions.h"
 
 #ifndef MEMORY_H
 #define MEMORY_H
@@ -8,10 +9,12 @@
 
 void initMemory();
 
-int load(int address);
+int load(int address, int *except);
 
-void store(int address, int value);
+void store(int address, int value, int *except);
 
 void displayMemory();
+
+void clearMemory();
 
 #endif

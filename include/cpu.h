@@ -7,8 +7,10 @@
 
 void initCPU();
 
-void loadInstructions();
+void loadFile(char *src, int *except);
 
-void exec();
+void loadInstruction(int instruct, int *except);
+
+void run(char* flag, char* src);
 
 #endif

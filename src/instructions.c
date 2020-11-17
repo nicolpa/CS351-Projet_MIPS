@@ -333,3 +333,133 @@ int getRegister(const char* reg, int *except)
         return 0;
     }
 }
+
+void execADDI(int inst, int *execpt) 
+{
+    
+}
+
+void execADD(int inst, int *execpt) 
+{
+    
+}
+
+void execAND(int inst, int *execpt) 
+{
+    
+}
+
+void execBEQ(int inst, int *execpt) 
+{
+    
+}
+
+void execBGTZ(int inst, int *execpt) 
+{
+    
+}
+
+void execBLEZ(int inst, int *execpt) 
+{
+    
+}
+
+void execBNE(int inst, int *execpt) 
+{
+    
+}
+
+void execDIV(int inst, int *execpt) 
+{
+    
+}
+
+void execJ(int inst, int *execpt) 
+{
+    
+}
+
+void execJAL(int inst, int *execpt) 
+{
+    
+}
+
+void execJR(int inst, int *execpt) 
+{
+    
+}
+
+void execLUI(int inst, int *execpt) 
+{
+    
+}
+
+void execLW(int inst, int *execpt) 
+{
+    
+}
+
+void execMHFI(int inst, int *execpt) 
+{
+    
+}
+
+void execMHLO(int inst, int *execpt) 
+{
+    
+}
+
+void execMULT(int inst, int *execpt) 
+{
+    
+}
+
+void execNOP(int inst, int *execpt) 
+{
+    
+}
+
+void execOR(int inst, int *execpt) 
+{
+    
+}
+
+void execROTR(int inst, int *execpt) 
+{
+    
+}
+
+void execSLL(int inst, int *execpt) 
+{
+    
+}
+
+void execSLT(int inst, int *execpt) 
+{
+    
+}
+
+void execSRL(int inst, int *execpt) 
+{
+    
+}
+
+void execSUB(int inst, int *execpt) 
+{
+    
+}
+
+void execSW(int inst, int *execpt) 
+{
+    
+}
+
+void execSYSCALL(int inst, int *execpt) 
+{
+    
+}
+
+void execXOR(int inst, int *execpt) 
+{
+    
+}

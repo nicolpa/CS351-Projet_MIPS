@@ -7,17 +7,14 @@ void initMemory()
     mem = NULL;
 }
 
-int load(int address) 
+int load(int address, int *except) 
 {
-    return fetch(&mem, address * 4);
+    
 }
 
-void store(int address, int value) 
+void store(int address, int valu, int *excepte) 
 {
-    if(value == 0)
-        delete(&mem, address * 4);
-    else
-        insert(&mem, value, address * 4);
+
 }
 
 void displayMemory() 
@@ -28,5 +25,5 @@ void displayMemory()
 
 void clearMemory()
 {
-    clear(&mem);
+
 }

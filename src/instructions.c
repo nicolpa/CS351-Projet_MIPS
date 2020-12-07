@@ -50,7 +50,7 @@ void assemblyToHex(const char* src, const char* dst)
     }
 }
 
-int instructionHex(const char* inst, int *except) 
+int instructionHex(char* inst, int *except) 
 {
     char *op = getOpcode(inst);
     if(strcmp(op, "NOP") == 0)

@@ -25,5 +25,5 @@ void displayMemory()
 
 void clearMemory()
 {
-
+    clear(&mem);
 }

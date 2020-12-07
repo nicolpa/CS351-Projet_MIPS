@@ -8,4 +8,6 @@ char *removeSpaces(const char *str);
 
 int strToInt(const char *str, int *except);
 
+void removeComment(char *str);
+
 #endif

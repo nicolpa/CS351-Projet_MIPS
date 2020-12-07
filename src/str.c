@@ -31,7 +31,7 @@ char *removeSpaces(const char *str)
 
 int strToInt(const char *str, int *except)
 {
-    for (int i = 0; i < strlen(str); i++)
+    for (int i = (*str == '-') ? 1 : 0; i < strlen(str); i++)
     {
         if (str[i] < '0' || str[i] > '9')
         {
@@ -41,5 +41,15 @@ int strToInt(const char *str, int *except)
     }
 
     *except = 0;
-    return atoi(str);
+    return (*str == '-') ? -1 * atoi(str) : atoi(str);
+}
+
+void removeComment(char *str) 
+{
+    int i = 0;
+
+    while (str[i] != '#' && str[i] != '\0')
+        i++;
+    
+    str[i] = '\0';
 }

@@ -16,13 +16,11 @@ int loadFile(char *src, int *except)
         int line = 1;
         while (fgets(inst, 255, fIn))
         {
-            if(strlen(inst) > 1 && inst[0] != '#')
+            removeComment(inst);
+            if(strlen(inst) > 1)
             {
                 if(inst[strlen(inst) - 1] == '\n')
                     inst[strlen(inst) - 1] = '\0';
-                char *tmp = strchr(inst, '#');
-                if(tmp != NULL)
-                    *tmp = '\0';
                 
                 int intHex = instructionHex(inst, except);
                 
@@ -41,9 +39,8 @@ int loadFile(char *src, int *except)
 
                 loadInstruction(intHex, (line - 1) * 4, except);
 
-                line++;
-
             }
+            line++;
         }
 
         printf("\n*** Done ***\n");
@@ -98,6 +95,7 @@ void run(char* flag, char* src)
                 {
                     printf("display registers [r]; memory [m]; continue [c]\n");
                     scanf("%c", &option);
+                    getchar();  //remove newline garbage in buffer
                     switch (option)
                     {
                     case 'r':
@@ -216,7 +214,9 @@ int readFromTerminal()
     do
     {
         printf("> ");
-        gets(inst);
+        fgets(inst, 255, stdin);
+        inst[strlen(inst) - 1] = '\0';
+        removeComment(inst);
         if(strlen(inst) != 0 && strcmp(inst, "exit") != 0)
         {
             toExec = instructionHex(inst, &except);

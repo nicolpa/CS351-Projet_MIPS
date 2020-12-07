@@ -1,3 +1,4 @@
+#include <string.h>
 #include "../include/instructions.h"
 #include "../include/register.h"
 #include "../include/memory.h"
@@ -7,10 +8,12 @@
 
 void initCPU();
 
-void loadFile(char *src, int *except);
+int loadFile(char *src, int *except);
 
-void loadInstruction(int instruct, int *except);
+void loadInstruction(int instruct, int address, int *except);
 
 void run(char* flag, char* src);
+
+int readFromTerminal();
 
 #endif

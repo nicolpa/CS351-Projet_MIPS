@@ -2,7 +2,7 @@
 #include "../include/instructions.h"
 #include "../include/register.h"
 #include "../include/memory.h"
-#include "../include/linkedList.h"
+#include "../include/cpu.h"
 
 int main(int argc, char *args[])
 {
@@ -21,8 +21,8 @@ int main(int argc, char *args[])
         }
         else if(strcmp(args[1], "-int") == 0)
         {
-            printf("Interactive mode\n");
-            //exec mode interative
+            // printf("Interactive mode\n");
+            run(args[1], NULL);
         }
         else
         {
@@ -30,15 +30,18 @@ int main(int argc, char *args[])
             {
                 if(args[1][0] == '-')
                 {
-                    printf("Invalid flag\n");
+                    perror("Invalid flag\n");
                     return -1;
                 }
                 //exec fichier
-                printf("Normal mode\n");
+                // printf("Normal mode\n");
+                run(NULL, args[1]);
+                
             }
             else if(argc == 3 && strcmp(args[2], "-pas") == 0)
             {
-                printf("Step by step mode");
+                // printf("Step by step mode");
+                run(args[2], args[1]);
                 //exec mode step by step
             }
             else
@@ -49,7 +52,6 @@ int main(int argc, char *args[])
             
         }
 
-        printf("Done\n");
         return 0;   
     }
 

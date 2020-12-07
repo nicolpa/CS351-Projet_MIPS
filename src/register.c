@@ -54,13 +54,14 @@ void setPC(int value)
 
 void displayRegisters()
 {
+    printf("*** Register states ***\n\n");
     for (int i = 0; i < N_REGISTER; i += 4)
     {
-        printf("$%.2d : %d", i, registers[i]);
+        printf("$%.2d: %d", i, registers[i]);
         for (int j = 1; j < 4; j++)
-            printf("\t\t$%.2d : %d", i + j, registers[i + j]);
+            printf("\t\t$%.2d: %d", i + j, registers[i + j]);
         printf("\n");
     }
 
-    printf("PC  : %d\t\tHI  : %d\t\tHO  : %d", PC, HI, HO);
+    printf("PC : %d\t\tHI : %d\t\tHO : %d\n\n", PC, HI, HO);
 }

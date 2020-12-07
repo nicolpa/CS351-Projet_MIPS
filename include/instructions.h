@@ -3,6 +3,8 @@
 #include <string.h>
 #include "exceptions.h"
 #include "str.h"
+#include "memory.h"
+#include "register.h"
 
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H

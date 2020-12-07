@@ -1,3 +1,5 @@
+#include <string.h>
+
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
@@ -10,7 +12,8 @@
 #define IMM_EXPECTED    5
 #define UNDEFINED_REG   6
 #define INVALID_ADDRESS 7
+#define LOADING_ERROR   8
 
-void exceptionToString(int nExcept, char *cExcept);
+void exceptionToString(int *nExcept, char *cExcept);
 
 #endif

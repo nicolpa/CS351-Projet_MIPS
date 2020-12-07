@@ -51,9 +51,10 @@ void delete (List *l, int address)
 
 int fetch(List *l, int address)
 {
+    // printf("fetch %d\n", address);
     Node *ptCurr = *l;
 
-    while (ptCurr != NULL && ptCurr->address <= address)
+    while (ptCurr != NULL && ptCurr->address < address)
         ptCurr = ptCurr->next;
 
     if (ptCurr != NULL && ptCurr->address == address)
@@ -71,7 +72,7 @@ void print(List *l)
     {
         if (i != 0)
             printf("\t\t");
-        printf("@%.8d : %d", ptCurr->address, ptCurr->value);
+        printf("@%.8d: %d", ptCurr->address, ptCurr->value);
         if (i == 3)
             printf("\n");
 

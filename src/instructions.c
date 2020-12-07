@@ -336,12 +336,18 @@ int getRegister(const char* reg, int *except)
 
 void execADDI(int inst, int *execpt) 
 {
-    
+    int rs = (inst & 0x3E00000) >> 21;
+    int rt = (inst & 0x1F0000) >> 16;
+    int immediate = inst & 0xFFFF;
+    setRegisterValue(rt, getRegisterValue(rs) + immediate);
 }
 
 void execADD(int inst, int *execpt) 
 {
-    
+    int rs = (inst & 0x3E00000) >> 21;
+    int rt = (inst & 0x1F0000) >> 16;
+    int rd = (inst & 0xF800) >> 11;
+    setRegisterValue(rd, getRegisterValue(rs) + getRegisterValue(rt));
 }
 
 void execAND(int inst, int *execpt) 
@@ -446,7 +452,10 @@ void execSRL(int inst, int *execpt)
 
 void execSUB(int inst, int *execpt) 
 {
-    
+    int rs = (inst & 0x3E00000) >> 21;
+    int rt = (inst & 0x1F0000) >> 16;
+    int rd = (inst & 0xF800) >> 11;
+    setRegisterValue(rd, getRegisterValue(rs) - getRegisterValue(rt));
 }
 
 void execSW(int inst, int *execpt) 

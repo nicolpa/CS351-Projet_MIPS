@@ -14,16 +14,16 @@ void exceptionToString(int *nExcept, char *cExcept)
         strcpy(cExcept, "Syntax error");
         break;
     case REG_EXPECTED:
-        strcpy(cExcept, "error");
+        strcpy(cExcept, "Expected register");
         break;
     case IMM_EXPECTED:
-        strcpy(cExcept, "error");
+        strcpy(cExcept, "Expected immediate value");
         break;
     case UNDEFINED_REG:
-        strcpy(cExcept, "error");;
+        strcpy(cExcept, "Undefined register");;
         break;
     case INVALID_ADDRESS:
-        strcpy(cExcept, "error");
+        strcpy(cExcept, "Invalid address");
         break;
     case LOADING_ERROR:
         strcpy(cExcept, "Unable to open file : No such file or directory");

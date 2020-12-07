@@ -10,7 +10,7 @@ void initRegisters();
 
 int getRegisterValue(int registerId);
 
-int getHO();
+int getLO();
 
 int getHI();
 
@@ -18,7 +18,7 @@ int getPC();
 
 void setRegisterValue(int registerId, int value);
 
-void setHO(int value);
+void setLO(int value);
 
 void setHI(int value);
 

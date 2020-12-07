@@ -37,7 +37,11 @@
 #define SYSCALL 0xC     //<-
 #define XOR     0x26    //<-
 
-
+#define RS(inst)    ((inst & 0x3E00000   ) >> 21)
+#define RD(inst)    ((inst & 0xF800      ) >> 11)
+#define RT(inst)    ((inst & 0x1F0000    ) >> 16)
+#define IMM(inst)    (inst & 0xFFFF)
+#define SA(inst)    ((inst & 0x7E0        )      >> 6)
 
 void assemblyToHex(const char *src, const char *dst);
 
@@ -54,31 +58,31 @@ int getOffset(const char *inst, int *except);
 
 int getRegister(const char *reg, int *except);
 
-void execADDI   (int inst, int *execpt);
-void execADD    (int inst, int *execpt);
-void execAND    (int inst, int *execpt);
-void execBEQ    (int inst, int *execpt);
-void execBGTZ   (int inst, int *execpt);
-void execBLEZ   (int inst, int *execpt);
-void execBNE    (int inst, int *execpt);
-void execDIV    (int inst, int *execpt);
-void execJ      (int inst, int *execpt);
-void execJAL    (int inst, int *execpt);
-void execJR     (int inst, int *execpt);
-void execLUI    (int inst, int *execpt);
-void execLW     (int inst, int *execpt);
-void execMHFI   (int inst, int *execpt);
-void execMHLO   (int inst, int *execpt);
-void execMULT   (int inst, int *execpt);
-void execNOP    (int inst, int *execpt);
-void execOR     (int inst, int *execpt);
-void execROTR   (int inst, int *execpt);
-void execSLL    (int inst, int *execpt);
-void execSLT    (int inst, int *execpt);
-void execSRL    (int inst, int *execpt);
-void execSUB    (int inst, int *execpt);
-void execSW     (int inst, int *execpt);
-void execSYSCALL(int inst, int *execpt);
-void execXOR    (int inst, int *execpt);
+void execADDI   (int inst, int *except);
+void execADD    (int inst, int *except);
+void execAND    (int inst, int *except);
+void execBEQ    (int inst, int *except);
+void execBGTZ   (int inst, int *except);
+void execBLEZ   (int inst, int *except);
+void execBNE    (int inst, int *except);
+void execDIV    (int inst, int *except);
+void execJ      (int inst, int *except);
+void execJAL    (int inst, int *except);
+void execJR     (int inst, int *except);
+void execLUI    (int inst, int *except);
+void execLW     (int inst, int *except);
+void execMHFI   (int inst, int *except);
+void execMHLO   (int inst, int *except);
+void execMULT   (int inst, int *except);
+void execNOP    (int inst, int *except);
+void execOR     (int inst, int *except);
+void execROTR   (int inst, int *except);
+void execSLL    (int inst, int *except);
+void execSLT    (int inst, int *except);
+void execSRL    (int inst, int *except);
+void execSUB    (int inst, int *except);
+void execSW     (int inst, int *except);
+void execSYSCALL(int inst, int *except);
+void execXOR    (int inst, int *except);
 
 #endif

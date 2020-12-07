@@ -2,14 +2,14 @@
 
 int registers[N_REGISTER];
 
-int PC, HI, HO;
+int PC, HI, LO;
 
 void initRegisters()
 {
     for (int i = 0; i < N_REGISTER; i++)
         registers[i] = 0;
 
-    PC = HI = HO = 0;
+    PC = HI = LO = 0;
 }
 
 int getRegisterValue(int registerId)
@@ -17,9 +17,9 @@ int getRegisterValue(int registerId)
     return registers[registerId];
 }
 
-int getHO()
+int getLO()
 {
-    return HO;
+    return LO;
 }
 
 int getHI()
@@ -37,9 +37,9 @@ void setRegisterValue(int registerId, int value)
     registers[registerId] = value;
 }
 
-void setHO(int value)
+void setLO(int value)
 {
-    HO = value;
+    LO = value;
 }
 
 void setHI(int value)
@@ -63,5 +63,5 @@ void displayRegisters()
         printf("\n");
     }
 
-    printf("PC : %d\t\tHI : %d\t\tHO : %d\n\n", PC, HI, HO);
+    printf("PC : %d\t\tHI : %d\t\tLO : %d\n\n", PC, HI, LO);
 }

@@ -161,7 +161,7 @@ int instructionHex(char* inst, int *except)
     }
     else if(strcmp(op, "XOR") == 0)
     {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 6) + XOR;
+        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + XOR;
     }
     else
     {
@@ -334,7 +334,7 @@ int getRegister(const char* reg, int *except)
     }
 }
 
-void execADDI(int inst, int *execpt) 
+void execADDI(int inst, int *except) 
 {
     int rs = (inst & 0x3E00000) >> 21;
     int rt = (inst & 0x1F0000) >> 16;
@@ -342,133 +342,161 @@ void execADDI(int inst, int *execpt)
     setRegisterValue(rt, getRegisterValue(rs) + immediate);
 }
 
-void execADD(int inst, int *execpt) 
+void execADD(int inst, int *except) 
 {
-    int rs = (inst & 0x3E00000) >> 21;
-    int rt = (inst & 0x1F0000) >> 16;
-    int rd = (inst & 0xF800) >> 11;
-    setRegisterValue(rd, getRegisterValue(rs) + getRegisterValue(rt));
+    setRegisterValue(RD(inst), getRegisterValue(RS(inst)) + getRegisterValue(RT(inst)));
 }
 
-void execAND(int inst, int *execpt) 
+void execAND(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getRegisterValue(RS(inst)) & getRegisterValue(RT(inst)));
+}
+
+void execBEQ(int inst, int *except) 
+{
+    if(getRegisterValue(RS(inst)) == getRegisterValue(RT(inst)))
+        setPC(getPC() + IMM(inst) * 4);
+}
+
+void execBGTZ(int inst, int *except) 
+{
+    if(getRegisterValue(RS(inst)) > 0)
+        setPC(getPC() + (IMM(inst) * 4));
+}
+
+void execBLEZ(int inst, int *except) 
+{
+    if(getRegisterValue(RS(inst)) <= 0)
+        setPC(getPC() + (IMM(inst) * 4));
+}
+
+void execBNE(int inst, int *except) 
+{
+    if(getRegisterValue(RS(inst)) != getRegisterValue(RT(inst)))
+        setPC(getPC() + (IMM(inst) * 4));
+}
+
+void execDIV(int inst, int *except) 
+{
+    int rs = RS(inst);
+    int rt = RT(inst);
+    
+    setLO(getRegisterValue(rs) / getRegisterValue(rt));
+    setHI(getRegisterValue(rs) % getRegisterValue(rt));
+}
+
+void execJ(int inst, int *except) 
 {
     
 }
 
-void execBEQ(int inst, int *execpt) 
+void execJAL(int inst, int *except) 
 {
     
 }
 
-void execBGTZ(int inst, int *execpt) 
+void execJR(int inst, int *except) 
+{
+    // int rs = (inst & 0x3E00000) >> 21;
+    // int hint = 0;
+    // setPC(getPC() + getRegisterValue(rs) * 4);
+}
+
+void execLUI(int inst, int *except) 
+{
+    setRegisterValue(RT(inst), IMM(inst) << 16);
+}
+
+void execLW(int inst, int *except) 
+{
+    int base = RS(inst);
+    int rt = RT(inst);
+    int offset = IMM(inst);
+
+    if(((offset + base) & 0x2) != 0)
+        *except = INVALID_ADDRESS;
+    else
+        setRegisterValue(rt, load(offset + base, except));
+}
+
+void execMHFI(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getHI());
+}
+
+void execMHLO(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getLO());
+}
+
+void execMULT(int inst, int *except) 
+{
+    long int res = RS(inst) * RT(inst);
+    setLO(res & 0xFFFFFFFF);
+    setHI(res >> 32);
+}
+
+void execNOP(int inst, int *except) 
+{
+    // do nothing
+}
+
+void execOR(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getRegisterValue(RS(inst) | RT(inst)));
+}
+
+void execROTR(int inst, int *except) 
 {
     
 }
 
-void execBLEZ(int inst, int *execpt) 
+void execSLL(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getRegisterValue(RT(inst) << SA(inst)));
+}
+
+void execSLT(int inst, int *except) 
+{
+    if(getRegisterValue(RS(inst)) < getRegisterValue(RT(inst)))
+        setRegisterValue(RD(inst), 1);
+    else
+        setRegisterValue(RD(inst), 0);
+}
+
+void execSRL(int inst, int *except) 
+{
+    setRegisterValue(RD(inst), getRegisterValue(RT(inst) >> SA(inst)));
+}
+
+void execSUB(int inst, int *except) 
+{
+    // int rs = (inst & 0x3E00000) >> 21;
+    // int rt = (inst & 0x1F0000) >> 16;
+    // int rd = (inst & 0xF800) >> 11;
+    setRegisterValue(RD(inst), getRegisterValue(RD(inst)) - getRegisterValue(RT(inst)));
+}
+
+void execSW(int inst, int *except) 
+{
+    int base = RS(inst);
+    int rt = RT(inst);
+    int offset = IMM(inst);
+
+    if(((offset + base) & 0x2) != 0)
+        *except = INVALID_ADDRESS;
+    else
+    {
+        store(base + offset, getRegisterValue(rt), except);
+    }
+}
+
+void execSYSCALL(int inst, int *except) 
 {
     
 }
 
-void execBNE(int inst, int *execpt) 
+void execXOR(int inst, int *except) 
 {
-    
-}
-
-void execDIV(int inst, int *execpt) 
-{
-    
-}
-
-void execJ(int inst, int *execpt) 
-{
-    
-}
-
-void execJAL(int inst, int *execpt) 
-{
-    
-}
-
-void execJR(int inst, int *execpt) 
-{
-    
-}
-
-void execLUI(int inst, int *execpt) 
-{
-    
-}
-
-void execLW(int inst, int *execpt) 
-{
-    
-}
-
-void execMHFI(int inst, int *execpt) 
-{
-    
-}
-
-void execMHLO(int inst, int *execpt) 
-{
-    
-}
-
-void execMULT(int inst, int *execpt) 
-{
-    
-}
-
-void execNOP(int inst, int *execpt) 
-{
-    
-}
-
-void execOR(int inst, int *execpt) 
-{
-    
-}
-
-void execROTR(int inst, int *execpt) 
-{
-    
-}
-
-void execSLL(int inst, int *execpt) 
-{
-    
-}
-
-void execSLT(int inst, int *execpt) 
-{
-    
-}
-
-void execSRL(int inst, int *execpt) 
-{
-    
-}
-
-void execSUB(int inst, int *execpt) 
-{
-    int rs = (inst & 0x3E00000) >> 21;
-    int rt = (inst & 0x1F0000) >> 16;
-    int rd = (inst & 0xF800) >> 11;
-    setRegisterValue(rd, getRegisterValue(rs) - getRegisterValue(rt));
-}
-
-void execSW(int inst, int *execpt) 
-{
-    
-}
-
-void execSYSCALL(int inst, int *execpt) 
-{
-    
-}
-
-void execXOR(int inst, int *execpt) 
-{
-    
+    setRegisterValue(RD(inst), getRegisterValue(RS(inst)) ^ getRegisterValue(RT(inst)));
 }

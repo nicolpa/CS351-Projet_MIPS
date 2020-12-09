@@ -41,22 +41,50 @@
 #define RD(inst)    ((inst & 0xF800      ) >> 11)
 #define RT(inst)    ((inst & 0x1F0000    ) >> 16)
 #define IMM(inst)    (inst & 0xFFFF)
-#define SA(inst)    ((inst & 0x7E0        )      >> 6)
+#define SA(inst)    ((inst & 0x7E0       ) >> 6)
+
 
 void assemblyToHex(const char *src, const char *dst);
 
+/**
+ * Parse a string instruction into its hexadecimal value
+ * @param inst The instruction to parse
+ * @param except Return parameter for exception handling
+ */
 int instructionHex(char *inst, int *except);
 
+/**
+ * Get the opcode from an instruction
+ * @param inst The instruction
+ * @return The opcode
+ */
 char *getOpcode(const char *inst);
 
-//reg = 1 the op is a register
+/**
+ * Get on operand from the instruction
+ * @param inst The instruction
+ * @param placement The index of the operand within the instruction
+ * @param reg 1 if the operand is a register, 0 otherwise
+ * @param except Return paramter for exception handling
+ */
 int getOperande(const char *inst, int placement, int reg, int *except);
 
+/**
+ * 
+ */
 int getBase(const char *inst, int *except);
 
+/**
+ * 
+ */
 int getOffset(const char *inst, int *except);
 
+/**
+ * 
+ */
 int getRegister(const char *reg, int *except);
+
+//Execute each instruction
 
 void execADDI   (int inst, int *except);
 void execADD    (int inst, int *except);

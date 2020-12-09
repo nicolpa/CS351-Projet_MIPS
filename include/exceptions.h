@@ -14,6 +14,11 @@
 #define INVALID_ADDRESS 7
 #define LOADING_ERROR   8
 
+/**
+ * Get a string representtion of an error code
+ * @param nExcept The exception code
+ * @param cExcept The corresponding message
+ */
 void exceptionToString(int *nExcept, char *cExcept);
 
 #endif

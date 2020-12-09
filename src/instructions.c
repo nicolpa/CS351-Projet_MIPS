@@ -128,7 +128,7 @@ int instructionHex(char* inst, int *except)
     }
     else if(strcmp(op, "OR") == 0)
     {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) < 11) + OR;
+        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + OR;
     }
     else if(strcmp(op, "ROTR") == 0)
     {
@@ -409,7 +409,7 @@ void execLUI(int inst, int *except)
 
 void execLW(int inst, int *except) 
 {
-    int base = RS(inst);
+    int base = getRegisterValue(RS(inst));
     int rt = RT(inst);
     int offset = IMM(inst);
 
@@ -431,7 +431,7 @@ void execMHLO(int inst, int *except)
 
 void execMULT(int inst, int *except) 
 {
-    long int res = RS(inst) * RT(inst);
+    long int res = getRegisterValue(RS(inst)) * getRegisterValue(RT(inst));
     setLO(res & 0xFFFFFFFF);
     setHI(res >> 32);
 }
@@ -443,7 +443,7 @@ void execNOP(int inst, int *except)
 
 void execOR(int inst, int *except) 
 {
-    setRegisterValue(RD(inst), getRegisterValue(RS(inst) | RT(inst)));
+    setRegisterValue(RD(inst), getRegisterValue(RS(inst)) | getRegisterValue(RT(inst)));
 }
 
 void execROTR(int inst, int *except) 
@@ -471,15 +471,12 @@ void execSRL(int inst, int *except)
 
 void execSUB(int inst, int *except) 
 {
-    // int rs = (inst & 0x3E00000) >> 21;
-    // int rt = (inst & 0x1F0000) >> 16;
-    // int rd = (inst & 0xF800) >> 11;
     setRegisterValue(RD(inst), getRegisterValue(RD(inst)) - getRegisterValue(RT(inst)));
 }
 
 void execSW(int inst, int *except) 
 {
-    int base = RS(inst);
+    int base = getRegisterValue(RS(inst));
     int rt = RT(inst);
     int offset = IMM(inst);
 

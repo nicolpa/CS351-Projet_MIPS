@@ -1,6 +1,6 @@
 #include "linkedList.h"
 
-void insert(List *l, int value, int address)
+void insert(List *l, int value, unsigned int address)
 {
     Node *ptCurr = *l;
     Node *ptPrev = NULL;
@@ -27,7 +27,7 @@ void insert(List *l, int value, int address)
     }
 }
 
-void delete (List *l, int address)
+void delete (List *l, unsigned int address)
 {
     Node *ptCurr = *l;
     Node *ptPrev = NULL;
@@ -49,9 +49,8 @@ void delete (List *l, int address)
     }
 }
 
-int fetch(List *l, int address)
+int fetch(List *l, unsigned int address)
 {
-    // printf("fetch %d\n", address);
     Node *ptCurr = *l;
 
     while (ptCurr != NULL && ptCurr->address < address)
@@ -63,16 +62,16 @@ int fetch(List *l, int address)
     return 0;
 }
 
-void print(List *l)
+void print(List *l, unsigned int lastAddress)
 {
     Node *ptCurr = *l;
 
     int i = 0;
-    while (ptCurr != NULL)
+    while (ptCurr != NULL && ptCurr->address < lastAddress)
     {
         if (i != 0)
             printf("\t\t");
-        printf("@%.8d: %d", ptCurr->address, ptCurr->value);
+        printf("@%.8u: %d", ptCurr->address, ptCurr->value);
         if (i == 3)
             printf("\n");
 
@@ -80,6 +79,10 @@ void print(List *l)
 
         ptCurr = ptCurr->next;
     }
+
+    if(i == 0)
+        printf("   Memory is empty\n\n");
+
     if (i != 3 && i != 0)
         printf("\n");
 }

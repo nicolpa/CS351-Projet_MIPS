@@ -37,8 +37,7 @@ int loadFile(char *src, int *except)
 
                 printf("   %.8d   %.8x    { %s }\n", (line - 1) * 4, intHex, inst);
 
-                loadInstruction(intHex, (line - 1) * 4, except);
-
+                store(translateProgramAddress((line - 1) * 4), intHex, except);
             }
             line++;
         }
@@ -59,11 +58,6 @@ int loadFile(char *src, int *except)
     
 }
 
-void loadInstruction(int instruct, int address, int *except) 
-{
-    store(address, instruct, except);
-}
-
 void run(char* flag, char* src) 
 {
     initCPU();
@@ -72,6 +66,7 @@ void run(char* flag, char* src)
 
     if(src != NULL)
         programLength = loadFile(src, &except);
+
 
     if(except == OK)
     {
@@ -83,7 +78,7 @@ void run(char* flag, char* src)
             if(flag != NULL && strcmp(flag, "-int") == 0 && readFromTerminal() == 1)
                 break;
 
-            toExec = load(getPC(), &except);
+            toExec = load(translateProgramAddress(getPC()), &except);
             
             printf("   %.8d   %.8x\n", getPC(), toExec);
 
@@ -102,7 +97,7 @@ void run(char* flag, char* src)
                         displayRegisters();
                         break;
                     case 'm':
-                        displayMemory();
+                        displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
                         break;
                     }
                 } while (option != 'c');
@@ -198,9 +193,18 @@ void run(char* flag, char* src)
 
             setPC(getPC() + 4);
         }
-        printf("\n*** Done ***\n\n");
-        displayRegisters();
-        displayMemory();
+        
+    }
+    printf("\n*** Done ***\n\n");
+    displayRegisters();
+    displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
+
+    if(except != OK)
+    {
+        char err[255];
+        exceptionToString(&except, err);
+        printf("Error : %s\n", err);
+        printf("Aborting\n");
     }
 
     clearMemory();
@@ -233,7 +237,7 @@ int readFromTerminal()
     if(strcmp(inst, "exit") == 0)
         return 1;
 
-    store(getPC(), toExec, &except);
+    store(translateProgramAddress(getPC()), toExec, &except);
     return 0;
 }
 

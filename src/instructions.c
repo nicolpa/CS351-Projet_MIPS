@@ -1,55 +1,5 @@
 #include "../include/instructions.h"
 
-void assemblyToHex(const char* src, const char* dst) 
-{
-    FILE *fIn = fopen(src, "r");
-    if(fIn == NULL)
-    {
-        perror("Unable to open file : No such file or directory");
-    }
-    else
-    {
-        FILE* fOut = fopen(dst, "w");;
-        if (fOut == NULL)
-        {
-            perror("Unable to open file : No such file or directory");
-        }
-        else
-        {
-            char inst[255];
-            int line = 1;
-            while (fgets(inst, 255, fIn))
-            {
-                if(strlen(inst) > 1 && inst[0] != '#')
-                {
-                    if(inst[strlen(inst) - 1] == '\n')
-                        inst[strlen(inst) - 1] = '\0';
-                    char *tmp = strchr(inst, '#');
-                    if(tmp != NULL)
-                        *tmp = '\0';
-                    
-                    int except = OK;
-                    int intHex = instructionHex(inst, &except);
-                    switch (except)
-                    {
-                    case OK:
-                        fprintf(fOut, "%.8x\t{ %s }\n", intHex, inst);
-                        break;
-                    
-                    default:
-                        fprintf(fOut, "Error found at line %d\n", line);
-                        fprintf(fOut, "%.8x\t{ %s }\n", 0, inst);
-                        break;
-                    }
-                    line++;
-                }
-            }
-            fclose(fIn);
-            fclose(fOut);
-        }
-    }
-}
-
 int instructionHex(char* inst, int *except) 
 {
     char *op = getOpcode(inst);

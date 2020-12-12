@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "exceptions.h"
 #include "str.h"
 #include "memory.h"
@@ -43,8 +44,14 @@
 #define IMM(inst)    (inst & 0xFFFF)
 #define SA(inst)    ((inst & 0x7E0       ) >> 6)
 
+typedef struct
+{
+    char *sOpcode;
+    int nOpcode;
+    int bSpecial;
+    void (*exec)(int, int *);
+}instruction;
 
-void assemblyToHex(const char *src, const char *dst);
 
 /**
  * Parse a string instruction into its hexadecimal value
@@ -58,7 +65,11 @@ int instructionHex(char *inst, int *except);
  * @param inst The instruction
  * @return The opcode
  */
-char *getOpcode(const char *inst);
+instruction getOpcode(const char *inst, int *except);
+
+instruction parseOpcode(const char *str, int *except);
+
+instruction fetchOpcode(const int opcode, int *except);
 
 /**
  * Get on operand from the instruction
@@ -66,6 +77,7 @@ char *getOpcode(const char *inst);
  * @param placement The index of the operand within the instruction
  * @param reg 1 if the operand is a register, 0 otherwise
  * @param except Return paramter for exception handling
+ * @return The hexadecimal value of the operand
  */
 int getOperande(const char *inst, int placement, int reg, int *except);
 
@@ -83,6 +95,14 @@ int getOffset(const char *inst, int *except);
  * 
  */
 int getRegister(const char *reg, int *except);
+
+/**
+ * Convert a 32bit signed integer to a n bit signed integer
+ * @param value The value to be converted
+ * @param n The number of bits of the variable
+ * @return The converted value
+ */
+int signedNBit(int value, int n);
 
 //Execute each instruction
 

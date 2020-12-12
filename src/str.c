@@ -1,47 +1,64 @@
 #include "../include/str.h"
 
-char *removeSpaces(const char *str)
+char *trim(char *str) 
+{
+    while (isspace((unsigned char) *str)) str++;
+    if (*str) 
+    {
+        char *p = str;
+        while (*p) p++;
+        while (isspace((unsigned char) *(--p)));
+        p[1] = '\0';
+    }
+
+    return str;
+}
+
+char *removeSpaces(char *str)
 {
     if (str == NULL)
         return NULL;
 
-    int nSpace = 0;
-    for (int i = 0; i <= strlen(str); i++)
-    {
-        if (str[i] == ' ')
-            nSpace++;
-    }
 
-    int sizeRes = strlen(str) - nSpace;
-    char *res = (char *)malloc(sizeRes * sizeof(char));
-
-    int j = 0;
-    for (int i = 0; i < strlen(str); i++)
+    int i = 0;
+    while (str[i] != '\0')
     {
-        if (str[i] != ' ')
+        if(isspace(str[i]))
         {
-            res[j] = str[i];
-            j++;
+            int j = i;
+            while (str[j] != '\0')
+            {
+                str[j] = str[j + 1];
+                j++;
+            }
         }
-    }
-    res[sizeRes] = '\0';
 
-    return res;
+        if(!isspace(str[i]))
+            i++;
+    }
+    
+    return str;
 }
 
 int strToInt(const char *str, int *except)
 {
-    for (int i = (*str == '-') ? 1 : 0; i < strlen(str); i++)
+    int size = strlen(str);
+    if(size == 0)
+        return 0;
+    
+    int res = 0;
+    for(int i = (str[0] == '-') ? 1 : 0; i < size ; i++)
     {
         if (str[i] < '0' || str[i] > '9')
         {
             *except = -1;
             return 0;
         }
+        
+        res = res * 10 + str[i] - '0';
     }
 
-    *except = 0;
-    return (*str == '-') ? -1 * atoi(str) : atoi(str);
+    return (str[0] == '-') ? -res : res;
 }
 
 void removeComment(char *str) 
@@ -52,4 +69,9 @@ void removeComment(char *str)
         i++;
     
     str[i] = '\0';
+}
+
+int isAlphaNum(char c) 
+{
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
 }

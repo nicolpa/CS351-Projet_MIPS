@@ -11,7 +11,7 @@ all: $(BIN)/$(EXECUTABLE)
 
 run: clean all
 	clear
-	./$(BIN)/$(EXECUTABLE) ./test/test1.txt
+	./$(BIN)/$(EXECUTABLE) ./test/test3.txt -pas
 $(BIN)/$(EXECUTABLE): $(SRC)/*.c
 	$(CC) $(CFLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
 	

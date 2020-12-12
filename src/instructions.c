@@ -1,129 +1,102 @@
 #include "../include/instructions.h"
 
+const instruction instructionSet[] = 
+{
+    { "ADD"      , ADD      , 1, execADD    },
+    { "ADDI"     , ADDI     , 0, execADDI   },
+    { "AND"      , AND      , 1, execAND    },
+    { "BEQ"      , BEQ      , 0, execBEQ    },
+    { "BGTZ"     , BGTZ     , 0, execBGTZ   },
+    { "BLEZ"     , BLEZ     , 0, execBLEZ   },
+    { "BNE"      , BNE      , 0, execBNE    },
+    { "DIV"      , DIV      , 1, execDIV    },
+    { "J"        , J        , 0, execJ      },
+    { "JAL"      , JAL      , 0, execJAL    },
+    { "JR"       , JR       , 1, execJR     },
+    { "LUI"      , LUI      , 0, execLUI    },
+    { "LW"       , LW       , 0, execLW     },
+    { "MFHI"     , MFHI     , 1, execMHFI   },
+    { "MFLO"     , MFLO     , 1, execMHLO   },
+    { "MULT"     , MULT     , 1, execMULT   },
+    { "NOP"      , NOP      , 1, execNOP    },
+    { "OR"       , OR       , 1, execOR     },
+    { "ROTR"     , ROTR     , 1, execROTR   },
+    { "SLL"      , SLL      , 1, execSLL    },
+    { "SLT"      , SLT      , 1, execSLT    },
+    { "SRL"      , SRL      , 1, execSRL    },
+    { "SUB"      , SUB      , 1, execSUB    },
+    { "SW"       , SW       , 0, execSW     },
+    { "SYSCALL"  , SYSCALL  , 1, execSYSCALL},
+    { "XOR"      , XOR      , 1, execXOR    },
+    { "ILLEGAL"  , -1       ,-1             }
+};
+
 int instructionHex(char* inst, int *except) 
 {
-    char *op = getOpcode(inst);
-    if(strcmp(op, "NOP") == 0)
-    {
-        free(op);
-        return 0;
-    }
-    char *ope = removeSpaces(strchr(inst, ' '));
-    int res = 0;
+    inst = trim(inst);
+    instruction opcode = getOpcode(inst, except);
     *except = 0;
-    if(strcmp(op, "ADD") == 0)
+    if(strcmp(opcode.sOpcode, "NOP") == 0)
+        return 0;
+    
+    char *operand = removeSpaces(strchr(inst, ' '));
+    int res = 0;
+    if(opcode.bSpecial)
     {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + ADD;
-    }
-    else if(strcmp(op, "ADDI") == 0)
-    {
-        res += (ADDI << 26) + (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 0, 1, except) << 16) + getOperande(ope, 2, 0, except);
-    }
-    else if(strcmp(op, "AND") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + AND;
-    }
-    else if(strcmp(op, "BEQ") == 0)
-    {
-        res += (BEQ << 26) + (getOperande(ope, 0, 1, except) << 21) + (getOperande(ope, 1, 1, except) << 16) + getOperande(ope, 2, 0, except);
-    }
-    else if(strcmp(op, "BGTZ") == 0)
-    {
-        res += (BGTZ << 26) + (getOperande(ope, 0, 1, except) << 21) + getOperande(ope, 1, 0, except);
-    }
-    else if(strcmp(op, "BLEZ") == 0)
-    {
-         res += (BLEZ << 26) + (getOperande(ope, 0, 1, except) << 21) + getOperande(ope, 1, 0, except);
-    }
-    else if(strcmp(op, "BNE") == 0)
-    {
-         res += (BNE << 26) + (getOperande(ope, 0, 1, except) << 21) + (getOperande(ope, 1, 1, except) << 16) + getOperande(ope, 2, 0, except);
-    }
-    else if(strcmp(op, "DIV") == 0)
-    {
-        res += (getOperande(ope, 0, 1, except) << 21) + (getOperande(ope, 1, 1, except) << 16) + DIV;
-    }
-    else if(strcmp(op, "J") == 0)
-    {
-        res += (J << 26) + getOperande(ope, 0, 0, except);
-    }
-    else if(strcmp(op, "JAL") == 0)
-    {
-        res += (JAL << 26) + getOperande(ope, 0, 0, except);
-    }
-    else if(strcmp(op, "JR") == 0)
-    {
-        int hint = 0; // ??
-        res += (getOperande(ope, 0, 1, except) << 21) + (hint << 6) + JR;
-    }
-    else if(strcmp(op, "LUI") == 0)
-    {
-        res += (LUI << 26) + (getOperande(ope, 1, 0, except) << 16) + getOperande(ope, 1, 0, except);
-    }
-    else if(strcmp(op, "LW") == 0)
-    {
-        res += (LW << 26) + (getBase(ope, except) << 21) + (getOperande(ope, 0, 1, except) << 16) + getOffset(ope, except);
-    }
-    else if(strcmp(op, "MFHI") == 0)
-    {
-        res += (getOperande(ope, 0, 1, except) << 11) + MFHI;
-    }
-    else if(strcmp(op, "MFLO") == 0)
-    {
-        res += (getOperande(ope, 0, 1, except) << 11) + MFLO;
-    }
-    else if(strcmp(op, "MULT") == 0)
-    {
-        res += (getOperande(ope, 0, 1, except) << 21) + (getOperande(ope, 1, 1, except) << 16) + MULT;
-    }
-    else if(strcmp(op, "OR") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + OR;
-    }
-    else if(strcmp(op, "ROTR") == 0)
-    {
-        res +=(1 << 21) + (getOperande(ope, 1, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + (getOperande(ope, 2, 0, except) << 6) + ROTR;
-    }
-    else if(strcmp(op, "SLL") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + (getOperande(ope, 2, 0, except) << 6) + SLL;
-    }
-    else if(strcmp(op, "SLT") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + SLT;
-    }
-    else if(strcmp(op, "SRL") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + (getOperande(ope, 2, 0, except) << 6) + SRL;
-    }
-    else if(strcmp(op, "SUB") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + SUB;
-    }
-    else if(strcmp(op, "SW") == 0)
-    {
-        res += (SW << 26) + (getBase(ope, except) << 21) + (getOperande(ope, 0, 1, except) << 16) + getOffset(ope, except);
-    }
-    else if(strcmp(op, "SYSCALL") == 0)
-    {
-        int code = 0; // ??
-        res += (code << 6) + SYSCALL;
-    }
-    else if(strcmp(op, "XOR") == 0)
-    {
-        res += (getOperande(ope, 1, 1, except) << 21) + (getOperande(ope, 2, 1, except) << 16) + (getOperande(ope, 0, 1, except) << 11) + XOR;
+        if(opcode.nOpcode == SLL || opcode.nOpcode == SRL || opcode.nOpcode == ROTR)        
+        {
+            res += (opcode.nOpcode == ROTR) ? (1 << 21) : 0 + (getOperande(operand, 1, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + (getOperande(operand, 2, 0, except) << 6) + opcode.nOpcode;
+        }
+        else if(opcode.nOpcode == MULT || opcode.nOpcode == DIV)
+        {
+            res += (getOperande(operand, 0, 1, except) << 21) + (getOperande(operand, 1, 1, except) << 16) + opcode.nOpcode;
+        }
+        else if(opcode.nOpcode == MFHI || opcode.nOpcode == MFLO)
+        {
+            res += (getOperande(operand, 0, 1, except) << 11) + opcode.nOpcode;
+        }
+        else if(opcode.nOpcode == JR)
+        {
+            int hint = 0;   // ?
+            res += (getOperande(operand, 0, 1, except) << 21) + (hint << 6) + JR;
+        }
+        else if(opcode.nOpcode == SYSCALL)
+        {
+            int code = 0;   // ?
+            res += (code << 6) + SYSCALL;
+        }
+        else
+        {
+            res += (getOperande(operand, 1, 1, except) << 21) + (getOperande(operand, 2, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + opcode.nOpcode;
+        }
     }
     else
     {
-        *except = UNKOWN_OP;
+        if(opcode.nOpcode == LW || opcode.nOpcode == SW)        
+        {
+            (opcode.nOpcode << 26) + (getBase(operand, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + getOffset(operand, except);
+        }
+        else if(opcode.nOpcode == BLEZ || opcode.nOpcode == BGTZ)
+        {
+            res += (opcode.nOpcode << 26) + (getOperande(operand, 0, 1, except) << 21) + getOperande(operand, 1, 0, except);
+        }
+        else if(opcode.nOpcode == LUI)
+        {
+            res += (LUI << 26) + (getOperande(operand, 1, 0, except) << 16) + getOperande(operand, 1, 0, except);
+        }
+        else if(opcode.nOpcode == J || opcode.nOpcode == JAL)
+        {
+            res += (opcode.nOpcode << 26) + getOperande(operand, 0, 0, except);
+        }
+        else
+        {
+            res += (opcode.nOpcode << 26) + (getOperande(operand, 1, 1, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + getOperande(operand, 2, 0, except);
+        }
     }
-    
-    free(op);
-    free(ope);
     return res;
 }
 
-char* getOpcode(const char* inst) 
+instruction getOpcode(const char* inst, int *except) 
 {
     int i = 0;
     while (inst[i] != ' ' && inst[i] != '\0')
@@ -133,8 +106,35 @@ char* getOpcode(const char* inst)
     for(int j = 0; j < i; j++)
         op[j] = inst[j];
     op[i] = '\0';
-    
-    return op; 
+
+    instruction instOp = parseOpcode(op, except);
+    free(op);
+
+    return instOp;
+}
+
+instruction parseOpcode(const char *str, int *except) 
+{
+    for(int i = 0; i < 26; i++)
+    {
+        if(strcmp(str, instructionSet[i].sOpcode) == 0)
+            return instructionSet[i];
+    }
+
+    *except = UNKOWN_OP;
+    return instructionSet[26];
+}
+
+instruction fetchOpcode(const int opcode, int *except) 
+{
+    for(int i = 0; i < 26; i++)
+    {
+        if(instructionSet[i].nOpcode == opcode)
+            return instructionSet[i];
+    }
+
+    *except = UNKOWN_OP;
+    return instructionSet[26];
 }
 
 int getOperande(const char* inst, int placement, int reg, int* except) 
@@ -284,12 +284,15 @@ int getRegister(const char* reg, int *except)
     }
 }
 
+int signedNBit(int value, int n) 
+{
+    
+}
+
 void execADDI(int inst, int *except) 
 {
-    int rs = (inst & 0x3E00000) >> 21;
-    int rt = (inst & 0x1F0000) >> 16;
-    int immediate = inst & 0xFFFF;
-    setRegisterValue(rt, getRegisterValue(rs) + immediate);
+    printf("rt:%d, rs:%d, imm:%d\n", RT(inst), RS(inst), IMM(inst));
+    setRegisterValue(RT(inst), getRegisterValue(RS(inst)) + IMM(inst));
 }
 
 void execADD(int inst, int *except) 
@@ -322,8 +325,15 @@ void execBLEZ(int inst, int *except)
 
 void execBNE(int inst, int *except) 
 {
+    printf("%d != %d\n", (RS(inst)), (RT(inst)));
+    printf("%d != %d\n", getRegisterValue(RS(inst)), getRegisterValue(RT(inst)));
     if(getRegisterValue(RS(inst)) != getRegisterValue(RT(inst)))
+    {
         setPC(getPC() + (IMM(inst) * 4));
+        printf("Jumping\n");
+    }
+    
+    printf("%d\n", getPC());
 }
 
 void execDIV(int inst, int *except) 

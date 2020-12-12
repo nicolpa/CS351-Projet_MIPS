@@ -1,7 +1,7 @@
 ADDI $8, $0, 5
 ADDI $9, $0, 10
 MULT $8, $9
-MFHI 10
+MFHI $10
 MFLO $11
 DIV $9, $8
 MFHI $12

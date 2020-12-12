@@ -67,7 +67,6 @@ void run(char* flag, char* src)
     if(src != NULL)
         programLength = loadFile(src, &except);
 
-
     if(except == OK)
     {
         printf("*** Starting program execution ***\n\n");
@@ -85,7 +84,6 @@ void run(char* flag, char* src)
             if(flag != NULL)
             {
                 char option;
-
                 do
                 {
                     printf("display registers [r]; memory [m]; continue [c]\n");
@@ -101,100 +99,17 @@ void run(char* flag, char* src)
                         break;
                     }
                 } while (option != 'c');
-                
             }
 
             if((toExec & 0xFC000000) == 0)
-            {
-                switch (toExec & 0x3F)
-                {
-                case ADD:
-                    execADD(toExec, &except);
-                    break;
-                case AND:
-                    execAND(toExec, &except);
-                    break;
-                case DIV:
-                    execDIV(toExec, &except);
-                    break;
-                case JR:
-                    execJR(toExec, &except);
-                    break;
-                case MFHI:
-                    execMHFI(toExec, &except);
-                    break;
-                case MFLO:
-                    execMHLO(toExec, &except);
-                    break;
-                case MULT:
-                    execMULT(toExec, &except);
-                    break;
-                case NOP:
-                    execNOP(toExec, &except);
-                    break;
-                case OR:
-                    execOR(toExec, &except);
-                    break;
-                case ROTR:
-                    execROTR(toExec, &except);
-                    break;
-                // case SLL:
-                //     break;
-                case SLT:
-                    execSLT(toExec, &except);
-                    break;
-                // case SRL:
-                //     break;
-                case SUB:
-                    execSUB(toExec, &except);
-                    break;
-                case SYSCALL:
-                    execSYSCALL(toExec, &except);
-                    break;
-                case XOR:
-                    execXOR(toExec, &except);
-                    break;
-                }
-            }
+                fetchOpcode(toExec & 0x3F, &except).exec(toExec, &except);
             else
-            {
-                switch ((toExec & 0xFC000000) >> 0x1A)
-                {
-                case ADDI:
-                    execADDI(toExec, &except);
-                    break;
-                case BEQ:
-                    execBEQ(toExec, &except);
-                    break;
-                case BGTZ:
-                    execBGTZ(toExec, &except);
-                    break;
-                case BLEZ:
-                    execBLEZ(toExec, &except);
-                    break;
-                case BNE:
-                    execBNE(toExec, &except);
-                    break;
-                case J:
-                    execJ(toExec, &except);
-                    break;
-                case LUI:
-                    execLUI(toExec, &except);
-                    break;
-                case LW:
-                    execLW(toExec, &except);
-                    break;
-                case SW:
-                    execSW(toExec, &except);
-                    break;
-                }
-            }
+                fetchOpcode((toExec & 0xFC000000) >> 0x1A, &except).exec(toExec, &except);
             
-
             setPC(getPC() + 4);
         }
-        
     }
+    
     printf("\n*** Done ***\n\n");
     displayRegisters();
     displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
@@ -220,7 +135,7 @@ int readFromTerminal()
         printf("> ");
         fgets(inst, 255, stdin);
         inst[strlen(inst) - 1] = '\0';
-        removeComment(inst);
+        removeComment(trim(inst));
         if(strlen(inst) != 0 && strcmp(inst, "exit") != 0)
         {
             toExec = instructionHex(inst, &except);
@@ -240,4 +155,3 @@ int readFromTerminal()
     store(translateProgramAddress(getPC()), toExec, &except);
     return 0;
 }
-

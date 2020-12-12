@@ -1,14 +1,19 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#include <ctype.h>
 
 #ifndef STR_H
 #define STR_H
+
+char *trim(char *s);
 
 /**
  * Remove the spaces from a string
  * @param str The string
  */
-char *removeSpaces(const char *str);
+char *removeSpaces(char *str);
 
 /**
  * Convert a string into an integer
@@ -22,5 +27,18 @@ int strToInt(const char *str, int *except);
  * @param str Return parameter The string without the comments
  */
 void removeComment(char *str);
+
+/**
+ * Remove all unecessary spaces and tabulation from the string
+ */
+void formatString(char *str);
+
+/**
+ * Check whether or not a character is an alpha-numeric value
+ * @return 1 if it's alpha-numeric 0 otherwise
+ */
+int isAlphaNum(char c);
+
+char** split(char *str, const char delim, int *size);
 
 #endif

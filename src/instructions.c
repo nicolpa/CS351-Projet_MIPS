@@ -45,7 +45,7 @@ int instructionHex(char* inst, int *except)
     {
         if(opcode.nOpcode == SLL || opcode.nOpcode == SRL || opcode.nOpcode == ROTR)        
         {
-            res += (opcode.nOpcode == ROTR) ? (1 << 21) : 0 + (getOperande(operand, 1, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + (getOperande(operand, 2, 0, except) << 6) + opcode.nOpcode;
+            res += (opcode.nOpcode == ROTR) ? (1 << 21) : 0 + (getOperande(operand, 1, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + signedNBitsToMBits(getOperande(operand, 2, 0, except) << 6, 32, 5) + opcode.nOpcode;
         }
         else if(opcode.nOpcode == MULT || opcode.nOpcode == DIV)
         {
@@ -74,23 +74,23 @@ int instructionHex(char* inst, int *except)
     {
         if(opcode.nOpcode == LW || opcode.nOpcode == SW)        
         {
-            (opcode.nOpcode << 26) + (getBase(operand, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + getOffset(operand, except);
+            (opcode.nOpcode << 26) + (getBase(operand, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + signedNBitsToMBits(getOffset(operand, except), 32, 16);
         }
         else if(opcode.nOpcode == BLEZ || opcode.nOpcode == BGTZ)
         {
-            res += (opcode.nOpcode << 26) + (getOperande(operand, 0, 1, except) << 21) + getOperande(operand, 1, 0, except);
+            res += (opcode.nOpcode << 26) + (getOperande(operand, 0, 1, except) << 21) + signedNBitsToMBits(getOperande(operand, 1, 0, except), 32, 16);
         }
         else if(opcode.nOpcode == LUI)
         {
-            res += (LUI << 26) + (getOperande(operand, 1, 0, except) << 16) + getOperande(operand, 1, 0, except);
+            res += (LUI << 26) + (getOperande(operand, 1, 0, except) << 16) + signedNBitsToMBits(getOperande(operand, 1, 0, except), 32, 16);
         }
         else if(opcode.nOpcode == J || opcode.nOpcode == JAL)
         {
-            res += (opcode.nOpcode << 26) + getOperande(operand, 0, 0, except);
+            res += (opcode.nOpcode << 26) + signedNBitsToMBits(getOperande(operand, 0, 0, except), 32, 26);
         }
         else
         {
-            res += (opcode.nOpcode << 26) + (getOperande(operand, 1, 1, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + getOperande(operand, 2, 0, except);
+            res += (opcode.nOpcode << 26) + (getOperande(operand, 1, 1, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + signedNBitsToMBits(getOperande(operand, 2, 0, except), 32, 16);
         }
     }
     return res;
@@ -284,15 +284,24 @@ int getRegister(const char* reg, int *except)
     }
 }
 
-int signedNBit(int value, int n) 
+int signedNBitsToMBits(int value, int n, int m) 
 {
-    
+    long int signedNBitMask = pow(2, n) - 1;
+
+    if((value & ((signedNBitMask + 1) >> 1)) >> (n - 1) == 0)
+        return value;
+
+    long int signedMBitMask = pow(2, m) - 1;
+
+    int res = ((~value) & signedNBitMask) + 1;
+    res = ((~res) & signedMBitMask) + 1;
+
+    return res;
 }
 
 void execADDI(int inst, int *except) 
 {
-    printf("rt:%d, rs:%d, imm:%d\n", RT(inst), RS(inst), IMM(inst));
-    setRegisterValue(RT(inst), getRegisterValue(RS(inst)) + IMM(inst));
+    setRegisterValue(RT(inst), getRegisterValue(RS(inst)) + signedNBitsToMBits(IMM(inst), 16, 32));
 }
 
 void execADD(int inst, int *except) 
@@ -308,32 +317,25 @@ void execAND(int inst, int *except)
 void execBEQ(int inst, int *except) 
 {
     if(getRegisterValue(RS(inst)) == getRegisterValue(RT(inst)))
-        setPC(getPC() + IMM(inst) * 4);
+        setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
 void execBGTZ(int inst, int *except) 
 {
     if(getRegisterValue(RS(inst)) > 0)
-        setPC(getPC() + (IMM(inst) * 4));
+        setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
 void execBLEZ(int inst, int *except) 
 {
     if(getRegisterValue(RS(inst)) <= 0)
-        setPC(getPC() + (IMM(inst) * 4));
+        setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
 void execBNE(int inst, int *except) 
 {
-    printf("%d != %d\n", (RS(inst)), (RT(inst)));
-    printf("%d != %d\n", getRegisterValue(RS(inst)), getRegisterValue(RT(inst)));
     if(getRegisterValue(RS(inst)) != getRegisterValue(RT(inst)))
-    {
-        setPC(getPC() + (IMM(inst) * 4));
-        printf("Jumping\n");
-    }
-    
-    printf("%d\n", getPC());
+        setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
 void execDIV(int inst, int *except) 
@@ -364,7 +366,7 @@ void execJR(int inst, int *except)
 
 void execLUI(int inst, int *except) 
 {
-    setRegisterValue(RT(inst), IMM(inst) << 16);
+    setRegisterValue(RT(inst), signedNBitsToMBits(IMM(inst), 16, 32) << 16);
 }
 
 void execLW(int inst, int *except) 
@@ -413,7 +415,7 @@ void execROTR(int inst, int *except)
 
 void execSLL(int inst, int *except) 
 {
-    setRegisterValue(RD(inst), getRegisterValue(RT(inst) << SA(inst)));
+    setRegisterValue(RD(inst), getRegisterValue(RT(inst) << signedNBitsToMBits(SA(inst), 5, 32)));
 }
 
 void execSLT(int inst, int *except) 
@@ -426,7 +428,7 @@ void execSLT(int inst, int *except)
 
 void execSRL(int inst, int *except) 
 {
-    setRegisterValue(RD(inst), getRegisterValue(RT(inst) >> SA(inst)));
+    setRegisterValue(RD(inst), getRegisterValue(RT(inst) >> signedNBitsToMBits(SA(inst), 5, 32)));
 }
 
 void execSUB(int inst, int *except) 

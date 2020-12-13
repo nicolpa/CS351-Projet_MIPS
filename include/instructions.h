@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 #include "exceptions.h"
 #include "str.h"
 #include "memory.h"
@@ -97,12 +98,13 @@ int getOffset(const char *inst, int *except);
 int getRegister(const char *reg, int *except);
 
 /**
- * Convert a 32bit signed integer to a n bit signed integer
+ * Convert a n bit signed integer to a m bit signed integer
  * @param value The value to be converted
  * @param n The number of bits of the variable
+ * @param m The number of bits of the output variable
  * @return The converted value
  */
-int signedNBit(int value, int n);
+int signedNBitsToMBits(int value, int n, int m);
 
 //Execute each instruction
 

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -ansi --std=c11 -g
+CFLAGS = -Wall -pedantic -ansi --std=c11 -g -lm
 BIN = bin
 SRC = src
 INCLUDE = include
@@ -11,7 +11,7 @@ all: $(BIN)/$(EXECUTABLE)
 
 run: clean all
 	clear
-	./$(BIN)/$(EXECUTABLE) ./test/test3.txt -pas
+	./$(BIN)/$(EXECUTABLE) ./test/test5.txt
 $(BIN)/$(EXECUTABLE): $(SRC)/*.c
 	$(CC) $(CFLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
 	

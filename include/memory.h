@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "linkedList.h"
 #include "exceptions.h"
+#include <string.h>
+#include <stdlib.h>
 
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#define LAST_ADDRESS 0xFFFFFFFF
+#define LAST_ADDRESS 0xFFFFFFFC
 
 /**
  * Initiaze an empty memory
@@ -18,7 +20,7 @@ void initMemory();
  * @param except Return parameter for exception handling
  * @return The loaded value
  */
-int load(unsigned int address, int *except);
+int load(unsigned int address, exception *except);
 
 /**
  * Store an element into memory
@@ -26,7 +28,7 @@ int load(unsigned int address, int *except);
  * @param value The value to be stored
  * @param except Return parameter for exception handling
  */
-void store(unsigned int address, int value, int *except);
+void store(unsigned int address, int value, exception *except);
 
 /**
  * Display the memory

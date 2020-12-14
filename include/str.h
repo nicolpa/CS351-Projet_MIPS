@@ -39,6 +39,6 @@ void formatString(char *str);
  */
 int isAlphaNum(char c);
 
-char** split(char *str, const char delim, int *size);
+char** split(char *str, int *size);
 
 #endif

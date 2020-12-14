@@ -20,7 +20,7 @@ const instruction instructionSet[] =
     { "MULT"     , MULT     , 1, execMULT   },
     { "NOP"      , NOP      , 1, execNOP    },
     { "OR"       , OR       , 1, execOR     },
-    { "ROTR"     , ROTR     , 1, execROTR   },
+    { "ROTR"     , ROTR     , 1, execSRL    },
     { "SLL"      , SLL      , 1, execSLL    },
     { "SLT"      , SLT      , 1, execSLT    },
     { "SRL"      , SRL      , 1, execSRL    },
@@ -31,21 +31,30 @@ const instruction instructionSet[] =
     { "ILLEGAL"  , -1       ,-1             }
 };
 
-int instructionHex(char* inst, int *except) 
+int instructionHex(char* inst, exception *except) 
 {
-    inst = trim(inst);
+    *except = fetchException(OK);
     instruction opcode = getOpcode(inst, except);
-    *except = 0;
     if(strcmp(opcode.sOpcode, "NOP") == 0)
         return 0;
     
-    char *operand = removeSpaces(strchr(inst, ' '));
+    char *operand = strchr(inst, ' ') + 1;
+    if(operand == 1)
+    {
+        *except = fetchException(SYNTAX_ERROR);
+        return 0;
+    }
     int res = 0;
     if(opcode.bSpecial)
     {
-        if(opcode.nOpcode == SLL || opcode.nOpcode == SRL || opcode.nOpcode == ROTR)        
+        if(opcode.nOpcode == SLL || opcode.nOpcode == SRL)        
         {
-            res += (opcode.nOpcode == ROTR) ? (1 << 21) : 0 + (getOperande(operand, 1, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + signedNBitsToMBits(getOperande(operand, 2, 0, except) << 6, 32, 5) + opcode.nOpcode;
+            char *tmp = (char *)malloc(sizeof(char) * strlen(inst));
+            strcpy(tmp, inst);
+            char *ptr = strtok(tmp, " ");
+            int bROTR = (strcmp(ptr, "ROTR") == 0) ? 1 : 0;
+            free(tmp);
+            res += (bROTR << 21) + (getOperande(operand, 1, 1, except) << 16) + (getOperande(operand, 0, 1, except) << 11) + signedNBitsToMBits(getOperande(operand, 2, 0, except) << 6, 32, 5) + opcode.nOpcode;
         }
         else if(opcode.nOpcode == MULT || opcode.nOpcode == DIV)
         {
@@ -74,7 +83,7 @@ int instructionHex(char* inst, int *except)
     {
         if(opcode.nOpcode == LW || opcode.nOpcode == SW)        
         {
-            (opcode.nOpcode << 26) + (getBase(operand, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + signedNBitsToMBits(getOffset(operand, except), 32, 16);
+            res += (opcode.nOpcode << 26) + (getBase(operand, except) << 21) + (getOperande(operand, 0, 1, except) << 16) + signedNBitsToMBits(getOffset(operand, except), 32, 16);
         }
         else if(opcode.nOpcode == BLEZ || opcode.nOpcode == BGTZ)
         {
@@ -96,24 +105,19 @@ int instructionHex(char* inst, int *except)
     return res;
 }
 
-instruction getOpcode(const char* inst, int *except) 
+instruction getOpcode(const char* inst, exception *except) 
 {
-    int i = 0;
-    while (inst[i] != ' ' && inst[i] != '\0')
-        i++;
-
-    char* op = (char *)malloc(i * sizeof(char));
-    for(int j = 0; j < i; j++)
-        op[j] = inst[j];
-    op[i] = '\0';
-
-    instruction instOp = parseOpcode(op, except);
-    free(op);
+    char *tmp = (char *)malloc(sizeof(char) * strlen(inst));
+    strcpy(tmp, inst);
+    char *ptr = strtok(tmp, " ");
+    
+    instruction instOp = parseOpcode(ptr, except);
+    free(tmp);
 
     return instOp;
 }
 
-instruction parseOpcode(const char *str, int *except) 
+instruction parseOpcode(const char *str, exception *except) 
 {
     for(int i = 0; i < 26; i++)
     {
@@ -121,64 +125,72 @@ instruction parseOpcode(const char *str, int *except)
             return instructionSet[i];
     }
 
-    *except = UNKOWN_OP;
+    *except = fetchException(UNKOWN_OP);
     return instructionSet[26];
 }
 
-instruction fetchOpcode(const int opcode, int *except) 
+instruction fetchOpcode(const int opcode, const int bSpecial, exception *except) 
 {
     for(int i = 0; i < 26; i++)
     {
-        if(instructionSet[i].nOpcode == opcode)
+        if(instructionSet[i].nOpcode == opcode && instructionSet[i].bSpecial == bSpecial)
             return instructionSet[i];
     }
 
-    *except = UNKOWN_OP;
+    *except = fetchException(UNKOWN_OP);
     return instructionSet[26];
 }
 
-int getOperande(const char* inst, int placement, int reg, int* except) 
+int getOperande(const char* inst, int placement, int reg, exception *except) 
 {
-    if(*except != OK)
+    if(except->nCode != OK)
         return 0;
 
-    char* op = inst;
-    if(placement == 1)
-        op = strchr(op, ',') + 1;
-    else if(placement == 2)
-        op = strchr(strchr(op, ',' ) + 1, ',') + 1;
+    char *tmp = (char *)malloc(sizeof(char) * strlen(inst));
+    strcpy(tmp, inst);
+
+    char *op = strtok(tmp," ,");
+    switch (placement)
+    {
+    case 2:
+        op = strtok(NULL, " ,");
+    case 1:
+        op = strtok(NULL, " ,");
+        break;
+    }
+    
+    if(op == NULL)
+    {
+        *except = fetchException(SYNTAX_ERROR);
+        return 0;
+    }
     
     if(reg && op[0] != '$')
     {
-        *except = REG_EXPECTED;
+        *except = fetchException(REG_EXPECTED);
         return 0;
     }
     if(!reg && op[0] == '$')
     {
-        *except = IMM_EXPECTED;
+        *except = fetchException(IMM_EXPECTED);
         return 0;
     }
 
-    int i = 0;
-    if(reg) op++;
-
-    while (op[i] != ',' && op[i] != '\0')
-        i++;
-    
-    char res[i + 1];
-    for(int j = 0; j < i; j++)
-        res[j] = op[j];
-    res[i] = '\0';
-
+    int res;
     if(reg)
-        return getRegister(res, except);
+    {
+        res = getRegister(++op, except);
+        free(tmp);
+        return res;
+    }
     else
     {
         int strToIntErr = 0;
-        int n = strToInt(res, &strToIntErr);
+        int n = strToInt(op, &strToIntErr);
+        free(tmp);
         if(strToIntErr == -1)
         {
-            *except = SYNTAX_ERROR;
+            *except = fetchException(SYNTAX_ERROR);
             return 0;
         }
 
@@ -186,14 +198,15 @@ int getOperande(const char* inst, int placement, int reg, int* except)
     }
 }
 
-int getBase(const char* inst, int* except) 
+int getBase(const char* inst, exception *except) 
 {
     char* base = strchr(inst, '(') + 1;
     if(base[0] != '$')
     {
-        *except = REG_EXPECTED;
+        *except = fetchException(REG_EXPECTED);
         return 0;
     }
+
     int i = 0;
     base += 1;
     while(base[i] != ')' && base[i] != '\0')
@@ -201,7 +214,7 @@ int getBase(const char* inst, int* except)
     
     if(base[i] == '\0')
     {
-        *except = SYNTAX_ERROR;
+        *except = fetchException(SYNTAX_ERROR);
         return 0;
     }
 
@@ -213,12 +226,12 @@ int getBase(const char* inst, int* except)
 
 }
 
-int getOffset(const char* inst, int* except) 
+int getOffset(const char* inst, exception *except) 
 {
-    char* offset = strchr(inst, ',') + 1;
+    char* offset = strchr(inst, ',') + 2;
     if(offset[0] == '$')
     {
-        *except = IMM_EXPECTED;
+        *except = fetchException(IMM_EXPECTED);
         return 0;
     }
     int i = 0;
@@ -227,7 +240,7 @@ int getOffset(const char* inst, int* except)
     
     if(offset[i] == '\0')
     {
-        *except = SYNTAX_ERROR;
+        *except = fetchException(SYNTAX_ERROR);
         return 0;
     }
 
@@ -240,14 +253,14 @@ int getOffset(const char* inst, int* except)
     int n = strToInt(res, &strToIntErr);
     if(strToIntErr == -1)
     {
-        *except = SYNTAX_ERROR;
+        *except = fetchException(SYNTAX_ERROR);
         return 0;
     }
 
     return n;
 }
 
-int getRegister(const char* reg, int *except)
+int getRegister(const char* reg, exception *except)
 {
     int strToIntErr;
     if      (strcmp(reg, "zero") == 0)     return 0;
@@ -279,7 +292,7 @@ int getRegister(const char* reg, int *except)
         else if(strToInt(reg, &strToIntErr) >= 0 && strToInt(reg, &strToIntErr) <= 31 && strToIntErr != -1)
             return atoi(reg);
 
-        *except = UNDEFINED_REG;
+        *except = fetchException(UNDEFINED_REG);
         return 0;
     }
 }
@@ -299,46 +312,46 @@ int signedNBitsToMBits(int value, int n, int m)
     return res;
 }
 
-void execADDI(int inst, int *except) 
+void execADDI(int inst, exception *except) 
 {
     setRegisterValue(RT(inst), getRegisterValue(RS(inst)) + signedNBitsToMBits(IMM(inst), 16, 32));
 }
 
-void execADD(int inst, int *except) 
+void execADD(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RS(inst)) + getRegisterValue(RT(inst)));
 }
 
-void execAND(int inst, int *except) 
+void execAND(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RS(inst)) & getRegisterValue(RT(inst)));
 }
 
-void execBEQ(int inst, int *except) 
+void execBEQ(int inst, exception *except) 
 {
     if(getRegisterValue(RS(inst)) == getRegisterValue(RT(inst)))
         setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
-void execBGTZ(int inst, int *except) 
+void execBGTZ(int inst, exception *except) 
 {
     if(getRegisterValue(RS(inst)) > 0)
         setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
-void execBLEZ(int inst, int *except) 
+void execBLEZ(int inst, exception *except) 
 {
     if(getRegisterValue(RS(inst)) <= 0)
         setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
-void execBNE(int inst, int *except) 
+void execBNE(int inst, exception *except) 
 {
     if(getRegisterValue(RS(inst)) != getRegisterValue(RT(inst)))
         setPC(getPC() + (signedNBitsToMBits(IMM(inst), 16, 32) * 4));
 }
 
-void execDIV(int inst, int *except) 
+void execDIV(int inst, exception *except) 
 {
     int rs = RS(inst);
     int rt = RT(inst);
@@ -347,78 +360,70 @@ void execDIV(int inst, int *except)
     setHI(getRegisterValue(rs) % getRegisterValue(rt));
 }
 
-void execJ(int inst, int *except) 
+void execJ(int inst, exception *except) 
 {
-    
+    printf("Gne\n");
+    setPC(getPC() + (RS(inst) * 4));
 }
 
-void execJAL(int inst, int *except) 
+void execJAL(int inst, exception *except) 
 {
-    
+    // TODO
 }
 
-void execJR(int inst, int *except) 
+void execJR(int inst, exception *except) 
 {
-    // int rs = (inst & 0x3E00000) >> 21;
-    // int hint = 0;
-    // setPC(getPC() + getRegisterValue(rs) * 4);
+    setPC(getRegisterValue(RS(inst)));
+    printf("PC = %d\n", getPC());
 }
 
-void execLUI(int inst, int *except) 
+void execLUI(int inst, exception *except) 
 {
     setRegisterValue(RT(inst), signedNBitsToMBits(IMM(inst), 16, 32) << 16);
 }
 
-void execLW(int inst, int *except) 
+void execLW(int inst, exception *except) 
 {
     int base = getRegisterValue(RS(inst));
     int rt = RT(inst);
     int offset = IMM(inst);
 
-    if(((offset + base) & 0x2) != 0)
-        *except = INVALID_ADDRESS;
-    else
-        setRegisterValue(rt, load(offset + base, except));
+    setRegisterValue(rt, load((offset * 4) + base, except));
 }
 
-void execMHFI(int inst, int *except) 
+void execMHFI(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getHI());
 }
 
-void execMHLO(int inst, int *except) 
+void execMHLO(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getLO());
 }
 
-void execMULT(int inst, int *except) 
+void execMULT(int inst, exception *except) 
 {
     long int res = getRegisterValue(RS(inst)) * getRegisterValue(RT(inst));
     setLO(res & 0xFFFFFFFF);
     setHI(res >> 32);
 }
 
-void execNOP(int inst, int *except) 
+void execNOP(int inst, exception *except) 
 {
     // do nothing
 }
 
-void execOR(int inst, int *except) 
+void execOR(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RS(inst)) | getRegisterValue(RT(inst)));
 }
 
-void execROTR(int inst, int *except) 
-{
-    
-}
-
-void execSLL(int inst, int *except) 
+void execSLL(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RT(inst) << signedNBitsToMBits(SA(inst), 5, 32)));
 }
 
-void execSLT(int inst, int *except) 
+void execSLT(int inst, exception *except) 
 {
     if(getRegisterValue(RS(inst)) < getRegisterValue(RT(inst)))
         setRegisterValue(RD(inst), 1);
@@ -426,36 +431,34 @@ void execSLT(int inst, int *except)
         setRegisterValue(RD(inst), 0);
 }
 
-void execSRL(int inst, int *except) 
+void execSRL(int inst, exception *except) 
 {
-    setRegisterValue(RD(inst), getRegisterValue(RT(inst) >> signedNBitsToMBits(SA(inst), 5, 32)));
+    int tmp = 0;
+    if((inst & 0x200000) == 0x200000)
+        tmp = getRegisterValue(RT(inst)) << (32 - signedNBitsToMBits(SA(inst), 5, 32));
+
+    setRegisterValue(RD(inst), tmp + (getRegisterValue(RT(inst)) >> signedNBitsToMBits(SA(inst), 5, 32)));
 }
 
-void execSUB(int inst, int *except) 
+void execSUB(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RD(inst)) - getRegisterValue(RT(inst)));
 }
 
-void execSW(int inst, int *except) 
+void execSW(int inst, exception *except) 
 {
     int base = getRegisterValue(RS(inst));
-    int rt = RT(inst);
     int offset = IMM(inst);
 
-    if(((offset + base) & 0x2) != 0)
-        *except = INVALID_ADDRESS;
-    else
-    {
-        store(base + offset, getRegisterValue(rt), except);
-    }
+    store(base + (offset * 4), getRegisterValue(RT(inst)), except);
 }
 
-void execSYSCALL(int inst, int *except) 
+void execSYSCALL(int inst, exception *except) 
 {
-    
+    // TODO
 }
 
-void execXOR(int inst, int *except) 
+void execXOR(int inst, exception *except) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RS(inst)) ^ getRegisterValue(RT(inst)));
 }

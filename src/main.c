@@ -3,7 +3,7 @@
 #include "../include/register.h"
 #include "../include/memory.h"
 #include "../include/cpu.h"
-
+#include "../include/exceptions.h"
 int main(int argc, char *args[])
 {
     printf("//========== MIPS Emulator ==========\\\\\n\n");

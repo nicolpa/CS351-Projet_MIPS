@@ -7,21 +7,25 @@ void initMemory()
     mem = NULL;
 }
 
-int load(unsigned int address, int *except) 
+int load(unsigned int address, exception *except) 
 {
-    if(address > LAST_ADDRESS)
+    if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        *except = INVALID_ADDRESS;
+        *except = fetchException(INVALID_ADDRESS);
+        printf("%u\n", address);
         return 0;
     }
 
     return fetch(&mem, address);
 }
 
-void store(unsigned int address, int value, int *except) 
+void store(unsigned int address, int value, exception *except) 
 {
-    if(address < 0 || address > LAST_ADDRESS)
-        *except = INVALID_ADDRESS;
+    if(address < 0 || address > LAST_ADDRESS || ((address) & 0x3) != 0)
+    {
+        *except = fetchException(INVALID_ADDRESS);
+        printf("%u\n", address);
+    }
     else
         insert(&mem, value, address);
 }

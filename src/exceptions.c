@@ -1,35 +1,26 @@
 #include "../include/exceptions.h"
 
-void exceptionToString(int *nExcept, char *cExcept) 
+const exception exceptions[] =
 {
-    switch (*nExcept)
+    {OK},
+    {UNKOWN_OP, "Unknown operande"},
+    {OVERFLOW, "Overflow"},
+    {SYNTAX_ERROR, "Syntax error"},
+    {REG_EXPECTED, "Expected register"},
+    {IMM_EXPECTED, "Expected immediate value"},
+    {UNDEFINED_REG, "Undefined register"},
+    {INVALID_ADDRESS, "Invalid address"},
+    {LOADING_ERROR, "Unable to open file : No such file or directory"},
+    {UNKWNOW, "Unknown error"}
+};
+
+exception fetchException(int nCode) 
+{
+    for(int i = 0; i < 9; i++)
     {
-    case UNKOWN_OP:
-        strcpy(cExcept, "Unknown operande");
-        break;
-    case OVERFLOW:
-        strcpy(cExcept, "Overflock");
-        break;
-    case SYNTAX_ERROR:
-        strcpy(cExcept, "Syntax error");
-        break;
-    case REG_EXPECTED:
-        strcpy(cExcept, "Expected register");
-        break;
-    case IMM_EXPECTED:
-        strcpy(cExcept, "Expected immediate value");
-        break;
-    case UNDEFINED_REG:
-        strcpy(cExcept, "Undefined register");;
-        break;
-    case INVALID_ADDRESS:
-        strcpy(cExcept, "Invalid address");
-        break;
-    case LOADING_ERROR:
-        strcpy(cExcept, "Unable to open file : No such file or directory");
-    break;
-    default:
-        strcpy(cExcept, "Unknown error");
-        break;
+        if(exceptions[i].nCode == nCode)
+            return exceptions[i];
     }
+
+    return exceptions[9];
 }

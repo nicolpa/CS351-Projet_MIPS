@@ -17,7 +17,7 @@ void initCPU();
  * @param except Return parameter for exception handling
  * @return The program length
  */
-int loadFile(char *src, int *except);
+int loadFile(char *src, exception *except);
 
 /**
  * Read an execution the standard input stream

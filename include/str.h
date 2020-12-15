@@ -10,12 +10,6 @@
 char *trim(char *s);
 
 /**
- * Remove the spaces from a string
- * @param str The string
- */
-char *removeSpaces(char *str);
-
-/**
  * Convert a string into an integer
  * @param str The string to parse
  * @param except Return parameter from exception handling

@@ -24,34 +24,6 @@ char *trim(char *str)
     return str;
 }
 
-char *removeSpaces(char *str)
-{
-    if (str == NULL)
-        return NULL;
-
-
-    int i = 0;
-    int firtSpace = 1;
-    while (str[i] != '\0')
-    {
-        if(isspace(str[i]))
-        {
-
-            int j = i;
-            while (str[j] != '\0')
-            {
-                str[j] = str[j + 1];
-                j++;
-            }
-        }
-
-        if(!isspace(str[i]))
-            i++;
-    }
-    
-    return str;
-}
-
 int strToInt(const char *str, int *except)
 {
     int size = strlen(str);

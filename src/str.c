@@ -1,25 +1,5 @@
 #include "../include/str.h"
 
-void resetAttributes()
-{
-    printf("%s[%dm", ESC, NORMAL);
-}
-
-void setForegroundColor(const int color)
-{
-    printf("%s[38;2;%dm", ESC, color);
-}
-
-void setBackgroundColor(const int color)
-{
-    printf("%s[48;2;%dm", ESC, color);
-}
-
-void setTextAttribute(const int attribute) 
-{
-    printf("%s[48;2;%dm", ESC, attribute);
-}
-
 char *trim(char *str) 
 {
     int i = 0;

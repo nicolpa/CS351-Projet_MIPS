@@ -28,13 +28,15 @@ int load(unsigned int address, exception *except);
  * @param value The value to be stored
  * @param except Return parameter for exception handling
  */
-void store(unsigned int address, int value, exception *except);
+void store(unsigned int address, int value, char* sInstruction, exception *except);
 
 /**
  * Display the memory
  * @param lastAddress Don't display element in memory starting from this adress (used to hide the program loaded in memory from the user)
  */
 void displayMemory(unsigned int lastAddress);
+
+char *getInstructionStr(unsigned int address, exception *except);
 
 /**
  * Empty the entire memory

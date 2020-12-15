@@ -13,6 +13,7 @@ int loadFile(char *src, exception *except)
     if(fIn != NULL)
     {
         char inst[255];
+        int nbError = 0;
         int line = 1;
         while (fgets(inst, 255, fIn))
         {
@@ -28,20 +29,27 @@ int loadFile(char *src, exception *except)
                 if(except->nCode != OK)
                 {
                     printf("Error on line %d : %s\n", line, inst);
-                    printf("   %s\n", except->sCode);
-                    printf("Aborting\n");
-                    fclose(fIn);
-                    return -1;
+                    nbError++;
+                    *except = fetchException(OK);
                 }
 
                 printf("   %.8d   %.8x    { %s }\n", (line - 1) * 4, intHex, inst);
 
-                store(translateProgramAddress((line - 1) * 4), intHex, except);
+                store(translateProgramAddress((line - 1) * 4), intHex, inst, except);
                 line++;
             }
         }
 
-        printf("\n*** Done ***\n");
+        if(nbError == 0)
+        {
+            printf("\n*** Done ***\n\n");
+
+        }
+        else
+        {
+            printf("\n   %.2d Error found\n   Aborting\n\n", nbError);
+            *except = fetchException(LOADING_ERROR);
+        }
         fclose(fIn);
         return line - 1;
     }
@@ -70,13 +78,12 @@ void run(char* flag, char* src)
         while ((getPC() < programLength * 4 || programLength == -1) && except.nCode == OK)
         {
             int toExec;
-            // printf("PC = %d\n", getPC());
             if(flag != NULL && strcmp(flag, "-int") == 0 && readFromTerminal() == 1)
                 break;
 
             toExec = load(translateProgramAddress(getPC()), &except);
-            
-            printf("   %.8d   %.8x\n", getPC(), toExec);
+            char *sInst = getInstructionStr(translateProgramAddress(getPC()), &except);
+            printf("   %.8d   %.8x   { %s }\n", getPC(), toExec, sInst);
 
             if(flag != NULL)
             {
@@ -105,21 +112,23 @@ void run(char* flag, char* src)
             
             setPC(getPC() + 4);
         }
-        // printf("PC = %d\n", getPC());
     }
     
-    printf("\n*** Done ***\n\n");
-    displayRegisters();
-    displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
-
-    if(except.nCode != OK)
+    if(getPC() != 0)
     {
-        printf("Error : %s\n", except.sCode);
-        if(except.sMetaData != NULL)
+        printf("\n*** Done ***\n\n");
+        displayRegisters();
+        displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
+
+        if(except.nCode != OK)
         {
-            printf("%s\n", except.sMetaData);
+            printf("Error : %s\n", except.sCode);
+            if(except.sMetaData != NULL)
+            {
+                printf("%s\n", except.sMetaData);
+            }
+            printf("Aborting\n");
         }
-        printf("Aborting\n");
     }
 
     clearMemory();
@@ -136,8 +145,6 @@ int readFromTerminal()
         fgets(inst, 255, stdin);
         inst[strlen(inst) - 1] = '\0';
         formatString(inst);
-        // printf("|%s|\n", inst);
-        // removeComment(trim(inst));
         if(strlen(inst) != 0 && strcmp(inst, "exit") != 0)
         {
             toExec = instructionHex(inst, &except);
@@ -152,6 +159,6 @@ int readFromTerminal()
     if(strcmp(inst, "exit") == 0)
         return 1;
 
-    store(translateProgramAddress(getPC()), toExec, &except);
+    store(translateProgramAddress(getPC()), toExec, inst, &except);
     return 0;
 }

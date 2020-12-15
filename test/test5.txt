@@ -1,9 +1,9 @@
 ADDI $8, $0, 5
-ADDI $9, $0, 2
+         ADDI $9, $0, 2
 XOR $10, $8, $9
 #comment
-SW $10, 3($0)
-SLL $10, $10, 2
+SW          $10, 3($0)
+SLL 10, $10, 2
 SUB $8, $8, $10 # other comment
 BLEZ $8, -2
 ROTR $8, $8, 3
@@ -13,7 +13,7 @@ MULT $10, $9
 MFLO $12
 MFHI $13
 
-ADDI $14, $0, 64
+ADI $14, $0, 64
 JR $14
 NOP
 NOP

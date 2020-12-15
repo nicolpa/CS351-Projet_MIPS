@@ -18,7 +18,7 @@ const instruction instructionSet[] =
     { "MFHI"     , MFHI     , 1, execMHFI   },
     { "MFLO"     , MFLO     , 1, execMHLO   },
     { "MULT"     , MULT     , 1, execMULT   },
-    { "NOP"      , NOP      , 1, execNOP    },
+    { "NOP"      , NOP      , 1, execSLL    },
     { "OR"       , OR       , 1, execOR     },
     { "ROTR"     , ROTR     , 1, execSRL    },
     { "SLL"      , SLL      , 1, execSLL    },
@@ -374,7 +374,6 @@ void execJAL(int inst, exception *except)
 void execJR(int inst, exception *except) 
 {
     setPC(getRegisterValue(RS(inst)));
-    printf("PC = %d\n", getPC());
 }
 
 void execLUI(int inst, exception *except) 
@@ -450,7 +449,7 @@ void execSW(int inst, exception *except)
     int base = getRegisterValue(RS(inst));
     int offset = IMM(inst);
 
-    store(base + (offset * 4), getRegisterValue(RT(inst)), except);
+    store(base + (offset * 4), getRegisterValue(RT(inst)), NULL, except);
 }
 
 void execSYSCALL(int inst, exception *except) 

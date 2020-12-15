@@ -11,7 +11,6 @@ int load(unsigned int address)
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        // *except = fetchException(INVALID_ADDRESS);
         setException(INVALID_ADDRESS);
         
         printf("%u\n", address);
@@ -25,7 +24,6 @@ void store(unsigned int address, int value, char* sInstruction)
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        // *except = fetchException(INVALID_ADDRESS);
         setException(INVALID_ADDRESS);
         printf("%u\n", address);
     }
@@ -43,7 +41,6 @@ char* getInstructionStr(unsigned int address)
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        // *except = fetchException(INVALID_ADDRESS);
         setException(INVALID_ADDRESS);
         printf("%u\n", address);
         return NULL;

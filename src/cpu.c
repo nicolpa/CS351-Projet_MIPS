@@ -58,7 +58,6 @@ int loadFile(char *src)
         printf("Aborting\n");
         return -1;
     }
-    
 }
 
 void run(char* flag, char* src) 
@@ -112,7 +111,7 @@ void run(char* flag, char* src)
         }
     }
     
-    if(getPC() != 0)
+    if(getPC() != 0)    // Don't display anything if the program failed to load or no instruction where execute in interactive mode
     {
         printf("\n*** Done ***\n\n");
         displayRegisters();

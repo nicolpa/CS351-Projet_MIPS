@@ -56,12 +56,27 @@ enum FontRatio
     DOUBLE_WIDTH_SINGLE_HEIGHT
 };
 
+/**
+ * Reset all attributes of the terminal
+ */
 void resetAttributes();
 
+/**
+ * Change the text color
+ * @param The new color for the text
+ */
 void setForegroundColor(int color);
 
+/**
+ * Set the text's background
+ * @param color The background color
+ */
 void setBackgroundColor(int color);
 
+/**
+ * Set the attribute for the text
+ * @param attribute The attribute to apply on the text
+ */
 void setTextAttribute(int attribute);
 
 #endif

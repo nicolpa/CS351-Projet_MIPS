@@ -2,32 +2,19 @@
 
 const exception exceptions[] =
 {
-    {OK, NULL, NULL},
-    {UNKOWN_OP, "Unknown operande", NULL},
-    {OVERFLOW, "Overflow", NULL},
-    {SYNTAX_ERROR, "Syntax error", NULL},
-    {REG_EXPECTED, "Expected register", NULL},
-    {IMM_EXPECTED, "Expected immediate value", NULL},
-    {UNDEFINED_REG, "Undefined register", NULL},
-    {INVALID_ADDRESS, "Invalid address", NULL},
-    {LOADING_ERROR, "Unable to open file : No such file or directory", NULL},
-    {UNKWNOW, "Unknown error", NULL}
+    { OK                , NULL                                              , NULL},
+    { UNKOWN_OP         , "Unknown operande"                                , NULL},
+    { OVERFLOW          , "Overflow"                                        , NULL},
+    { SYNTAX_ERROR      ,  "Syntax error"                                   , NULL},
+    { REG_EXPECTED      , "Expected register"                               , NULL},
+    { IMM_EXPECTED      , "Expected immediate value"                        , NULL},
+    { UNDEFINED_REG     , "Undefined register"                              , NULL},
+    { INVALID_ADDRESS   , "Invalid address"                                 , NULL},
+    { LOADING_ERROR     , "Unable to open file : No such file or directory" , NULL},
+    { UNKWNOW           , "Unknown error"                                   , NULL}
 };
 
 exception currentException;
-
-
-
-exception fetchException(int nCode) 
-{
-    for(int i = 0; i < 9; i++)
-    {
-        if(exceptions[i].nCode == nCode)
-            return exceptions[i];
-    }
-
-    return exceptions[9];
-}
 
 void setException(int nCode) 
 {

@@ -25,15 +25,21 @@ int load(unsigned int address);
  * Store an element into memory
  * @param address The address of the element
  * @param value The value to be stored
+ * @param sIntruction Store the instruction in string format (NULL if it not an instruction)
  */
 void store(unsigned int address, int value, char* sInstruction);
 
 /**
  * Display the memory
- * @param lastAddress Don't display element in memory starting from this adress (used to hide the program loaded in memory from the user)
+ * @param lastAddress Don't display element in memory starting from this adress (used to hide the loaded program in memory from the user)
  */
 void displayMemory(unsigned int lastAddress);
 
+/**
+ * Get the string representation of an instruction loaded into memory
+ * @param address The address of the instruction
+ * @return The string instruction (NULL if it is not an instrucion)
+ */
 char *getInstructionStr(unsigned int address);
 
 /**

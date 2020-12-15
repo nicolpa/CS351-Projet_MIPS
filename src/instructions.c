@@ -33,7 +33,6 @@ const instruction instructionSet[] =
 
 int instructionHex(char* inst) 
 {
-    // *except = fetchException(OK);
     setException(OK);
     instruction opcode = getOpcode(inst);
     if(strcmp(opcode.sOpcode, "NOP") == 0)
@@ -128,7 +127,6 @@ instruction parseOpcode(const char *str)
             return instructionSet[i];
     }
 
-    // *except = fetchException(UNKOWN_OP);
     setException(UNKOWN_OP);
     setExceptionMetaData(str);
     return instructionSet[26];
@@ -142,7 +140,6 @@ instruction fetchOpcode(const int opcode, const int bSpecial)
             return instructionSet[i];
     }
 
-    // *except = fetchException(UNKOWN_OP);
     setException(UNKOWN_OP);
     return instructionSet[26];
 }
@@ -167,21 +164,18 @@ int getOperande(const char* inst, int placement, int reg)
     
     if(op == NULL)
     {
-        // *except = fetchException(SYNTAX_ERROR);
         setException(SYNTAX_ERROR);
         return 0;
     }
     
     if(reg && op[0] != '$')
     {
-        // *except = fetchException(REG_EXPECTED);
         setException(REG_EXPECTED);
         setExceptionMetaData(op);
         return 0;
     }
     if(!reg && op[0] == '$')
     {
-        // *except = fetchException(IMM_EXPECTED);
         setException(IMM_EXPECTED);
         setExceptionMetaData(op);
         return 0;
@@ -201,7 +195,6 @@ int getOperande(const char* inst, int placement, int reg)
         free(tmp);
         if(strToIntErr == -1)
         {
-            // *except = fetchException(SYNTAX_ERROR);
             setException(SYNTAX_ERROR);
             return 0;
         }
@@ -215,7 +208,6 @@ int getBase(const char* inst)
     char* base = strchr(inst, '(') + 1;
     if(base[0] != '$')
     {
-        // *except = fetchException(REG_EXPECTED);
         setException(REG_EXPECTED);
         setExceptionMetaData(base);
         return 0;
@@ -228,7 +220,6 @@ int getBase(const char* inst)
     
     if(base[i] == '\0')
     {
-        // *except = fetchException(SYNTAX_ERROR);
         setException(SYNTAX_ERROR);
         return 0;
     }
@@ -246,7 +237,6 @@ int getOffset(const char* inst)
     char* offset = strchr(inst, ',') + 2;
     if(offset[0] == '$')
     {
-        // *except = fetchException(IMM_EXPECTED);
         setException(SYNTAX_ERROR);
         return 0;
     }
@@ -256,7 +246,6 @@ int getOffset(const char* inst)
     
     if(offset[i] == '\0')
     {
-        // *except = fetchException(SYNTAX_ERROR);
         setException(SYNTAX_ERROR);
         return 0;
     }
@@ -270,7 +259,6 @@ int getOffset(const char* inst)
     int n = strToInt(res, &strToIntErr);
     if(strToIntErr == -1)
     {
-        // *except = fetchException(SYNTAX_ERROR);
         setException(SYNTAX_ERROR);
         return 0;
     }
@@ -310,7 +298,6 @@ int getRegister(const char* reg)
         else if(strToInt(reg, &strToIntErr) >= 0 && strToInt(reg, &strToIntErr) <= 31 && strToIntErr != -1)
             return atoi(reg);
 
-        // *except = fetchException(UNDEFINED_REG);
         setException(UNDEFINED_REG);
         setExceptionMetaData(reg);
         return 0;
@@ -427,11 +414,6 @@ void execMULT(int inst)
     setHI(res >> 32);
 }
 
-void execNOP(int inst) 
-{
-    // do nothing
-}
-
 void execOR(int inst) 
 {
     setRegisterValue(RD(inst), getRegisterValue(RS(inst)) | getRegisterValue(RT(inst)));
@@ -475,6 +457,7 @@ void execSW(int inst)
 void execSYSCALL(int inst) 
 {
     // TODO
+    printf("SYSCALL\n");
 }
 
 void execXOR(int inst) 

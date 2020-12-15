@@ -12,7 +12,7 @@ char *trim(char *s);
 /**
  * Convert a string into an integer
  * @param str The string to parse
- * @param except Return parameter from exception handling
+ * @param except Return parameter for exception handling
  */
 int strToInt(const char *str, int *except);
 
@@ -26,11 +26,5 @@ void removeComment(char *str);
  * Remove all unecessary spaces and tabulation from the string
  */
 void formatString(char *str);
-
-/**
- * Check whether or not a character is an alpha-numeric value
- * @return 1 if it's alpha-numeric 0 otherwise
- */
-int isAlphaNum(char c);
 
 #endif

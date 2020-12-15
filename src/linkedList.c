@@ -73,8 +73,8 @@ void print(List *l, unsigned int lastAddress)
     int i = 0;
     while (ptCurr != NULL && ptCurr->address < lastAddress)
     {
-        // if (i != 0)
-        //     printf("\t\t");
+        if (i != 0)
+            printf("\t\t");
         printf("   @%.8u: %d", ptCurr->address, ptCurr->value);
         if (i == 3)
             printf("\n");

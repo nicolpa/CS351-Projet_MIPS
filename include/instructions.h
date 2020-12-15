@@ -49,9 +49,9 @@
 
 typedef struct
 {
-    char *sOpcode;                      // The string representation of the opcode
-    int nOpcode;                        // The hexadecilam value of the opcode
-    int bSpecial;                       // Whether or not it is a "special" opcode
+    char *sOpcode;         // The string representation of the opcode
+    int nOpcode;           // The hexadecilam value of the opcode
+    int bSpecial;          // Whether or not it is a "special" opcode
     void (*exec)(int);     // Pointer to the function to execture for the instruction
 }instruction;
 
@@ -142,7 +142,6 @@ void execLW     (int inst);
 void execMHFI   (int inst);
 void execMHLO   (int inst);
 void execMULT   (int inst);
-void execNOP    (int inst);
 void execOR     (int inst);
 void execSLL    (int inst);
 void execSLT    (int inst);

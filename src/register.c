@@ -50,7 +50,6 @@ void setHI(int value)
 void setPC(int value)
 {
     PC = value;
-    // printf("PC set = %d\n", getPC());
 }
 
 void displayRegisters()

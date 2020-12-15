@@ -64,7 +64,6 @@ void setPC(int value);
 /**
  * Display the registers state
  */
-
 void displayRegisters();
 
 #endif

@@ -8,10 +8,10 @@
 typedef struct Node Node;
 struct Node
 {
-    int value;
-    unsigned int address;
+    int value;              // The value at the specifieda address
+    unsigned int address;   // The address in memory
     char *sInstruction;     // Hold the string representation of a loaded instruction in memory
-    Node *next;
+    Node *next;             // Pointer to the next element in memory
 };
 
 typedef Node *List;

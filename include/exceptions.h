@@ -4,7 +4,8 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
-//exception
+// Exceptions
+
 #define UNKWNOW        -1
 #define OK              0
 #define UNKOWN_OP       1
@@ -18,27 +19,30 @@
 
 typedef struct
 {
-    int nCode;
-    char *sCode;
-    char *sMetaData;
+    int nCode;          // The code of the exception
+    char *sCode;        // The string representation of the exception
+    char *sMetaData;    // Optional metadata for the exception
 } exception;
 
-
-// exception fetchException(int nCode);
-
+/**
+ * The current exception state
+ */
 void setException(int nCode);
 
+/**
+ * Print the exception into  readable format with its metadata when available
+ */
 void printException();
 
+/**
+ * Get the exception code from the current exception
+ */
 int getExceptionCode();
 
+/**
+ * Set the metadata for the current exception
+ * @param metaDate The metadata of the exception
+ */
 void setExceptionMetaData(const char *metaData);
-
-// /**
-//  * Get a string representtion of an error code
-//  * @param nExcept The exception code
-//  * @param cExcept The corresponding message
-//  */
-// void exceptionToString(int *nExcept, char *cExcept);
 
 #endif

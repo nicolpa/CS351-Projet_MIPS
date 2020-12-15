@@ -6,7 +6,7 @@ void initCPU()
     initRegisters();
 }
 
-int loadFile(char *src, exception *except) 
+int loadFile(char *src) 
 {
     printf("*** Loading program ***\n\n");
     FILE *fIn = fopen(src, "r");
@@ -22,41 +22,39 @@ int loadFile(char *src, exception *except)
             formatString(inst);
             if(strlen(inst) > 1)
             {
-            // printf("|%s|\n", inst);
+                int intHex = instructionHex(inst);
+                printf("   %.8d   %.8x    { %s }\n", (line - 1) * 4, intHex, inst);
                 
-                int intHex = instructionHex(inst, except);
-                
-                if(except->nCode != OK)
+                if(getExceptionCode() != OK)
                 {
+                    setForegroundColor(LIGHT_YELLOW_CODE);
                     printf("Error on line %d : %s\n", line, inst);
+                    printException();
                     nbError++;
-                    *except = fetchException(OK);
+                    setException(OK);
                 }
 
-                printf("   %.8d   %.8x    { %s }\n", (line - 1) * 4, intHex, inst);
-
-                store(translateProgramAddress((line - 1) * 4), intHex, inst, except);
+                store(translateProgramAddress((line - 1) * 4), intHex, inst);
                 line++;
             }
         }
 
-        if(nbError == 0)
-        {
-            printf("\n*** Done ***\n\n");
+        printf("\n*** Done ***\n\n");
 
-        }
-        else
+        if(nbError != 0)
         {
+            setForegroundColor(YELLOW_CODE);
             printf("\n   %.2d Error found\n   Aborting\n\n", nbError);
-            *except = fetchException(LOADING_ERROR);
+            resetAttributes();
+            setException(LOADING_ERROR);
         }
         fclose(fIn);
         return line - 1;
     }
     else
     {
-        *except = fetchException(LOADING_ERROR);
-        printf("   %s\n", except->sCode);
+        setException(LOADING_ERROR);
+        printException();
         printf("Aborting\n");
         return -1;
     }
@@ -66,23 +64,23 @@ int loadFile(char *src, exception *except)
 void run(char* flag, char* src) 
 {
     initCPU();
-    exception except = fetchException(OK);
+    setException(OK);
     int programLength = -1;
 
     if(src != NULL)
-        programLength = loadFile(src, &except);
+        programLength = loadFile(src);
 
-    if(except.nCode == OK)
+    if(getExceptionCode() == OK)
     {
         printf("*** Starting program execution ***\n\n");
-        while ((getPC() < programLength * 4 || programLength == -1) && except.nCode == OK)
+        while ((getPC() < programLength * 4 || programLength == -1) && getExceptionCode() == OK)
         {
             int toExec;
             if(flag != NULL && strcmp(flag, "-int") == 0 && readFromTerminal() == 1)
                 break;
 
-            toExec = load(translateProgramAddress(getPC()), &except);
-            char *sInst = getInstructionStr(translateProgramAddress(getPC()), &except);
+            toExec = load(translateProgramAddress(getPC()));
+            char *sInst = getInstructionStr(translateProgramAddress(getPC()));
             printf("   %.8d   %.8x   { %s }\n", getPC(), toExec, sInst);
 
             if(flag != NULL)
@@ -106,9 +104,9 @@ void run(char* flag, char* src)
             }
 
             if((toExec & 0xFC000000) == 0)
-                fetchOpcode(toExec & 0x3F, 1, &except).exec(toExec, &except);
+                fetchOpcode(toExec & 0x3F, 1).exec(toExec);
             else
-                fetchOpcode((toExec & 0xFC000000) >> 0x1A, 0, &except).exec(toExec, &except);
+                fetchOpcode((toExec & 0xFC000000) >> 0x1A, 0).exec(toExec);
             
             setPC(getPC() + 4);
         }
@@ -120,13 +118,9 @@ void run(char* flag, char* src)
         displayRegisters();
         displayMemory(translateProgramAddress((programLength == -1) ? getPC() : programLength * 4));
 
-        if(except.nCode != OK)
+        if(getExceptionCode() != OK)
         {
-            printf("Error : %s\n", except.sCode);
-            if(except.sMetaData != NULL)
-            {
-                printf("%s\n", except.sMetaData);
-            }
+            printException();
             printf("Aborting\n");
         }
     }
@@ -138,7 +132,7 @@ int readFromTerminal()
 {
     char inst[255];
     int toExec;
-    exception except = fetchException(-1);
+    setException(-1);
     do
     {
         printf("> ");
@@ -147,18 +141,16 @@ int readFromTerminal()
         formatString(inst);
         if(strlen(inst) != 0 && strcmp(inst, "exit") != 0)
         {
-            toExec = instructionHex(inst, &except);
-            if(except.nCode != OK)
-            {
-                printf("Error : %s\n", except.sCode);
-            }
+            toExec = instructionHex(inst);
+            if(getExceptionCode() != OK)
+                printException();
         }
 
-    } while (!((except.nCode == OK || strcmp(inst, "exit") == 0) && strlen(inst) != 0));
+    } while (!((getExceptionCode() == OK || strcmp(inst, "exit") == 0) && strlen(inst) != 0));
 
     if(strcmp(inst, "exit") == 0)
         return 1;
 
-    store(translateProgramAddress(getPC()), toExec, inst, &except);
+    store(translateProgramAddress(getPC()), toExec, inst);
     return 0;
 }

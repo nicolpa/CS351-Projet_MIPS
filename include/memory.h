@@ -17,18 +17,16 @@ void initMemory();
 /**
  * Load an element from memory at specified address
  * @param address The address of the element
- * @param except Return parameter for exception handling
  * @return The loaded value
  */
-int load(unsigned int address, exception *except);
+int load(unsigned int address);
 
 /**
  * Store an element into memory
  * @param address The address of the element
  * @param value The value to be stored
- * @param except Return parameter for exception handling
  */
-void store(unsigned int address, int value, char* sInstruction, exception *except);
+void store(unsigned int address, int value, char* sInstruction);
 
 /**
  * Display the memory
@@ -36,7 +34,7 @@ void store(unsigned int address, int value, char* sInstruction, exception *excep
  */
 void displayMemory(unsigned int lastAddress);
 
-char *getInstructionStr(unsigned int address, exception *except);
+char *getInstructionStr(unsigned int address);
 
 /**
  * Empty the entire memory

@@ -1,4 +1,5 @@
 #include <string.h>
+#include "../include/ANSIColor.h"
 
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
@@ -23,7 +24,15 @@ typedef struct
 } exception;
 
 
-exception fetchException(int nCode);
+// exception fetchException(int nCode);
+
+void setException(int nCode);
+
+void printException();
+
+int getExceptionCode();
+
+void setExceptionMetaData(const char *metaData);
 
 // /**
 //  * Get a string representtion of an error code

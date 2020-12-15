@@ -7,11 +7,13 @@ void initMemory()
     mem = NULL;
 }
 
-int load(unsigned int address, exception *except) 
+int load(unsigned int address) 
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        *except = fetchException(INVALID_ADDRESS);
+        // *except = fetchException(INVALID_ADDRESS);
+        setException(INVALID_ADDRESS);
+        
         printf("%u\n", address);
         return 0;
     }
@@ -19,11 +21,12 @@ int load(unsigned int address, exception *except)
     return fetch(&mem, address)->value;
 }
 
-void store(unsigned int address, int value, char* sInstruction, exception *except) 
+void store(unsigned int address, int value, char* sInstruction) 
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        *except = fetchException(INVALID_ADDRESS);
+        // *except = fetchException(INVALID_ADDRESS);
+        setException(INVALID_ADDRESS);
         printf("%u\n", address);
     }
     else
@@ -36,11 +39,12 @@ void displayMemory(unsigned int lastAddress)
     print(&mem, lastAddress);
 }
 
-char* getInstructionStr(unsigned int address, exception *except) 
+char* getInstructionStr(unsigned int address) 
 {
     if(address > LAST_ADDRESS || ((address) & 0x3) != 0)
     {
-        *except = fetchException(INVALID_ADDRESS);
+        // *except = fetchException(INVALID_ADDRESS);
+        setException(INVALID_ADDRESS);
         printf("%u\n", address);
         return NULL;
     }

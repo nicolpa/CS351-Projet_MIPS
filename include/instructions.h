@@ -52,75 +52,68 @@ typedef struct
     char *sOpcode;                      // The string representation of the opcode
     int nOpcode;                        // The hexadecilam value of the opcode
     int bSpecial;                       // Whether or not it is a "special" opcode
-    void (*exec)(int, exception *);     // Pointer to the function to execture for the instruction
+    void (*exec)(int);     // Pointer to the function to execture for the instruction
 }instruction;
 
 
 /**
  * Parse a string instruction into its hexadecimal value
  * @param inst The instruction to parse
- * @param except Return parameter for exception handling
  */
-int instructionHex(char *inst, exception *except);
+int instructionHex(char *inst);
 
 /**
  * Get the opcode from an instruction
  * @param inst The instruction
  * @return The opcode
  */
-instruction getOpcode(const char *inst, exception *except);
+instruction getOpcode(const char *inst);
 
 /**
  * Parse the string representation of the opcode into its associate instruction 
  * @param str The opcode to be parsed
- * @param except Return paramter for exception handling
  * @return The parsed opcode
  */
-instruction parseOpcode(const char *str, exception *except);
+instruction parseOpcode(const char *str);
 
 /**
  * Fetch the instruction with the specified opcode
  * @param opcode The instruction opcode to fetch
  * @param bSpecial // Whether or not it is a "special" opcode
- * @param except Return paramter for exception handling
  * @return The correct instruction
  */
-instruction fetchOpcode(const int opcode, const int bSpecial, exception *except);
+instruction fetchOpcode(const int opcode, const int bSpecial);
 
 /**
  * Get on operand from the instruction
  * @param inst The instruction
  * @param placement The index of the operand within the instruction
  * @param reg 1 if the operand is a register, 0 otherwise
- * @param except Return paramter for exception handling
  * @return The hexadecimal value of the operand
  */
-int getOperande(const char *inst, int placement, int reg, exception *except);
+int getOperande(const char *inst, int placement, int reg);
 
 /**
  * Get the base of the address
  * @param inst The instruction
- * @param except Return paramter for exception handling
  * @return The hexadecimal value of the base
  * 
  */
-int getBase(const char *inst, exception *except);
+int getBase(const char *inst);
 
 /**
  * Get the offset of the address
  * @param inst The instruction
- * @param except Return paramter for exception handling
  * @return The hexadecimal value of the offset
  */
-int getOffset(const char *inst, exception *except);
+int getOffset(const char *inst);
 
 /**
  * Parse the register into its hexadecimal value
  * @param reg The register to parse
- * @param except Return paramter for exception handling
  * @return The hexadecimal value of the register
  */
-int getRegister(const char *reg, exception *except);
+int getRegister(const char *reg);
 
 /**
  * Convert a n bit signed integer to a m bit signed integer
@@ -133,30 +126,30 @@ int signedNBitsToMBits(int value, int n, int m);
 
 //Execute each instruction
 
-void execADDI   (int inst, exception *except);
-void execADD    (int inst, exception *except);
-void execAND    (int inst, exception *except);
-void execBEQ    (int inst, exception *except);
-void execBGTZ   (int inst, exception *except);
-void execBLEZ   (int inst, exception *except);
-void execBNE    (int inst, exception *except);
-void execDIV    (int inst, exception *except);
-void execJ      (int inst, exception *except);
-void execJAL    (int inst, exception *except);
-void execJR     (int inst, exception *except);
-void execLUI    (int inst, exception *except);
-void execLW     (int inst, exception *except);
-void execMHFI   (int inst, exception *except);
-void execMHLO   (int inst, exception *except);
-void execMULT   (int inst, exception *except);
-void execNOP    (int inst, exception *except);
-void execOR     (int inst, exception *except);
-void execSLL    (int inst, exception *except);
-void execSLT    (int inst, exception *except);
-void execSRL    (int inst, exception *except);
-void execSUB    (int inst, exception *except);
-void execSW     (int inst, exception *except);
-void execSYSCALL(int inst, exception *except);
-void execXOR    (int inst, exception *except);
+void execADDI   (int inst);
+void execADD    (int inst);
+void execAND    (int inst);
+void execBEQ    (int inst);
+void execBGTZ   (int inst);
+void execBLEZ   (int inst);
+void execBNE    (int inst);
+void execDIV    (int inst);
+void execJ      (int inst);
+void execJAL    (int inst);
+void execJR     (int inst);
+void execLUI    (int inst);
+void execLW     (int inst);
+void execMHFI   (int inst);
+void execMHLO   (int inst);
+void execMULT   (int inst);
+void execNOP    (int inst);
+void execOR     (int inst);
+void execSLL    (int inst);
+void execSLT    (int inst);
+void execSRL    (int inst);
+void execSUB    (int inst);
+void execSW     (int inst);
+void execSYSCALL(int inst);
+void execXOR    (int inst);
 
 #endif

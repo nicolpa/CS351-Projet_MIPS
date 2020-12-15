@@ -88,39 +88,3 @@ void formatString(char *str)
     }
     strcpy(str, tmp);
 }
-
-char** split(char *str, int *size)
-{
-    int i = 0;
-    *size = 0;
-    while (str[i] != '\0')
-    {
-        if(str[i] == ',')
-        {
-            (*size)++;
-        }
-        i++;
-    }
-
-    if(*size == 0)
-        return NULL;
-
-    char * ptr = strtok(str," ,");
-    while (ptr != NULL)
-    {
-        printf ("%s\n", ptr);
-        ptr = strtok(NULL, " ,");
-    }
-
-    // char res[*size][255];
-    // strcpy(res[0], strtok(str, ","));
-    // for(int i = 1; i < *size; i++)
-    // {
-    //     strcpy(res[0], strtok(NULL, ","));
-    // }
-
-    // for(int i = 0; i < *size; i++)
-    // {
-    //     printf("%s\n", res[i]);
-    // }
-}
